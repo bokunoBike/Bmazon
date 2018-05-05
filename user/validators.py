@@ -12,3 +12,4 @@ def validate_phone(value):
             '手机号码格式错误！',
             params={'value': value},
         )
+
