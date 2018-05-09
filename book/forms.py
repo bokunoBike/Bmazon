@@ -44,23 +44,24 @@ class AddBookForm(forms.Form):
     )
     origin_price = forms.DecimalField(
         label='原价',
-        max_length=6,
         decimal_places=2,
         max_digits=2,
         validators=[validate_not_negative_number],
         error_messages={
             "required": "原价不能为空！",
-            "max_length": "超出长度！",
+            "max_value": "超出最大值！",
         }
     )
     discount = forms.DecimalField(
         label='折扣',
-        max_length=3,
+        max_value=1,
+        min_value=0,
         decimal_places=2,
         max_digits=2,
         validators=[validate_discount],
         error_messages={
-            "max_length": "超出长度！",
+            "max_value": "超出最大值！",
+            "min_value": "超出最小值！",
         }
     )
     stock = forms.IntegerField(
@@ -77,6 +78,7 @@ class ModifyBookForm(forms.Form):
     """
     修改书籍表单
     """
+    book_id = forms.HiddenInput()
     name = forms.CharField(
         label='书名',
         max_length=20,
@@ -111,23 +113,23 @@ class ModifyBookForm(forms.Form):
     )
     origin_price = forms.DecimalField(
         label='原价',
-        max_length=6,
         decimal_places=2,
         max_digits=2,
         validators=[validate_not_negative_number],
         error_messages={
             "required": "原价不能为空！",
-            "max_length": "超出长度！",
         }
     )
     discount = forms.DecimalField(
         label='折扣',
-        max_length=3,
+        max_value=1,
+        min_value=0,
         decimal_places=2,
         max_digits=2,
         validators=[validate_discount],
         error_messages={
-            "max_length": "超出长度！",
+            "max_value": "超出最大值！",
+            "min_value": "超出最小值！",
         }
     )
     stock = forms.IntegerField(
