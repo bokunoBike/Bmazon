@@ -140,3 +140,13 @@ class ModifyBookForm(forms.Form):
     )
     catalogue = forms.Textarea(attrs={'cols': '40', 'rows': '7'})
     summary = forms.Textarea(attrs={'cols': '40', 'rows': '25'})
+
+
+class SearchBookForm(forms.Form):
+    """
+    查询书籍表单
+    """
+    search_info = forms.CharField(
+        label='查询信息',
+        max_length=30,
+    )
