@@ -8,5 +8,14 @@
     <h1>Bmazon</h1>
     <hr />
     {% include 'user/user_item_template.html' %}
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ search_book_form }}
+        <input type="submit" value="搜索">
+    </form>
+    {% for contact in contacts %}
+        {{ contact.full_name|upper }}
+    {% endfor %}
+    {% include 'book/page_template.html' %}
 </body>
 </html>
