@@ -5,7 +5,8 @@
     {% elif user.is_staff %}
         欢迎您，管理员{{user.username}}!<br>
         <a href={% url 'user:logout' %}>注销</a>
-        <a href={% url 'user:handle_orders' %}>处理订单</a>
+        <a href={% url 'manager:handle_orders' %}>处理订单</a>
+        <a href={% url 'book:add_book_page' %}>添加书籍</a>
     {% else  %}
         欢迎您，用户{{user.username}}!<br>
         <a href={% url 'user:logout' %}>注销</a>

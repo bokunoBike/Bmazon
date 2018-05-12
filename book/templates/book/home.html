@@ -7,7 +7,7 @@
 <body>
     <h1>Bmazon</h1>
     <hr />
-    {% include 'user/user_item_template.html' %}
+    {% include 'user_item_template.html' %}
     <form action="" method="post">
         {% csrf_token %}
         {{ search_book_form }}
@@ -16,6 +16,6 @@
     {% for contact in contacts %}
         {{ contact.full_name|upper }}
     {% endfor %}
-    {% include 'book/page_template.html' %}
+    {% include 'page_template.html' %}
 </body>
 </html>
