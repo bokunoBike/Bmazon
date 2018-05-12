@@ -8,13 +8,9 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .forms import *
 from .models import *
 from .functions import *
+from manager.functions import is_manager
 
 
-def is_manager(user):
-    return user.is_authenticated() and user.is_staff
-
-
-@require_http_methods(["POST"])
 @user_passes_test(is_manager, login_url='/login/login')
 def add_book(request):
     user = auth.get_user(request)
@@ -44,6 +40,7 @@ def add_book(request):
         return render(request, 'book/add_book.html', {'user': user, 'add_book_form': add_book_form})
 
 
+@user_passes_test(is_manager, login_url='/login/login')
 def modify_book(request):
     modify_book_form = ModifyBookForm(request.POST)
     if modify_book_form.is_valid():

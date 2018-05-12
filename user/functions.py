@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 
+from django.contrib.auth.models import User
 import django.contrib.auth as auth
 from django.db.utils import IntegrityError
-
-
-def is_manager(user):
-    return user.is_authenticated() and user.is_staff
 
 
 def register_user(request, register_form):
@@ -16,7 +13,7 @@ def register_user(request, register_form):
         phone = register_form.cleaned_data.get('phone')
 
         try:
-            user = auth.User.objects.create_user(username=username, password=password, )
+            user = User.objects.create_user(username=username, password=password, )
             user.profile.email = email
             user.profile.phone = phone
             user.profile.save()

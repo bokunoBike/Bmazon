@@ -2,7 +2,6 @@
 # 定义:登录表单、注册表单、添加收货信息表单
 
 from django import forms
-import re
 
 from .validators import *
 
