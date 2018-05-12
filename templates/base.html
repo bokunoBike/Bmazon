@@ -5,6 +5,8 @@
     <title>{% block titile %}默认标题{% endblock %}</title>
 </head>
 <body>
+    {% block script %}{% endblock %}
+
     <h1>{% block the_titile %}默认标题{% endblock %}</h1>
     <hr />
     {% include 'user_item_template.html' %}

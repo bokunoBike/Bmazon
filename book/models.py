@@ -8,7 +8,7 @@ from .validators import *
 def get_book_file_path(instance, filename):
     book_id = instance.book.book_id
     name = instance.book.name
-    return '%s/%s' % (str(book_id) + name, filename)
+    return 'books/%s/%s' % (str(book_id) + name, filename)
 
 
 class Book(models.Model):

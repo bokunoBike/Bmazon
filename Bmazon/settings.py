@@ -117,6 +117,6 @@ USE_TZ = False
 
 STATIC_URL = '/static/'
 
-MEDIA_ROOT = 'media/books/'
+MEDIA_ROOT = 'media/'
 
-MEDIA_URL = 'media/books/'
+MEDIA_URL = 'media/'

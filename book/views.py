@@ -4,6 +4,7 @@ import django.contrib.auth as auth
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.views.decorators.http import require_http_methods
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.files import File
 
 from .forms import *
 from .models import *
@@ -45,36 +46,41 @@ def add_book_page(request):
 
 
 @user_passes_test(is_manager, login_url='manager:login')
-def modify_book(request):
-    modify_book_form = ModifyBookForm(request.POST)
-    if modify_book_form.is_valid():
-        book_name = modify_book_form.cleaned_data.get('name')
-        publisher = modify_book_form.cleaned_data.get('publisher')
-        author = modify_book_form.cleaned_data.get('author')
-        category = modify_book_form.cleaned_data.get('category')
-        origin_price = modify_book_form.cleaned_data.get('origin_price')
-        discount = modify_book_form.cleaned_data.get('discount')
-        stock = modify_book_form.cleaned_data.get('stock')
-        cover = modify_book_form.cleaned_data.get('cover')
-        catalogue = modify_book_form.cleaned_data.get('catalogue')
-        summary = modify_book_form.cleaned_data.get('summary')
+def modify_book_page(request):
+    user = auth.get_user(request)
+    book_id = request.POST.get('book_id')
+    if request.method == 'POST':
+        modify_book_form = ModifyBookForm(request.POST)
+        if modify_book_form.is_valid():
+            book_name = modify_book_form.cleaned_data.get('name')
+            publisher = modify_book_form.cleaned_data.get('publisher')
+            author = modify_book_form.cleaned_data.get('author')
+            category = modify_book_form.cleaned_data.get('category')
+            origin_price = modify_book_form.cleaned_data.get('origin_price')
+            discount = modify_book_form.cleaned_data.get('discount')
+            stock = modify_book_form.cleaned_data.get('stock')
+            cover = modify_book_form.cleaned_data.get('cover')
+            catalogue = modify_book_form.cleaned_data.get('catalogue')
+            summary = modify_book_form.cleaned_data.get('summary')
 
-        dic = {'book_name': book_name, 'publisher': publisher, 'author': author, 'category': category,
-               'origin_price': origin_price, 'discount': discount, 'stock': stock, }
-        try:
-            book = Book.objects.save(**dic)
-            book_detail = book.bookdetail
-            book_detail.cover = cover
-            book_detail.catalogue = catalogue
-            book_detail.summary = summary
-            book_detail.save()
-            result = {'result': 1}
-        except Exception as e:
-            result = {'result': 0, 'error_message': e}
+            book_dic = {'name': book_name, 'publisher': publisher, 'author': author, 'category': category,
+                        'origin_price': origin_price, 'discount': discount, 'stock': stock}
+            book_detail_dic = {'cover': cover, 'catalogue': catalogue, 'summary': summary}
 
-    else:
-        result = {'result': 0, 'error_message': '表格内容有误'}
-    return result
+            try:
+                book = Book.objects.save(**dic)
+                book_detail = book.bookdetail
+                book_detail.cover = cover
+                book_detail.catalogue = catalogue
+                book_detail.summary = summary
+                book_detail.save()
+                result = {'result': 1}
+            except Exception as e:
+                result = {'result': 0, 'error_message': e}
+
+        else:
+            result = {'result': 0, 'error_message': '表格内容有误'}
+        return result
 
 
 def home(request):
@@ -92,3 +98,13 @@ def home(request):
         contacts = get_books_by_search_info_to_page(page=page)
         return render(request, 'book/home.html',
                       {'user': user, 'search_book_form': search_book_form, 'contacts': contacts})
+
+
+def look_book_detail_page(request):
+    user = auth.get_user(request)
+    book_id = request.GET.get('book_id')
+    book = get_book_by_book_id(book_id)
+    if book is None:
+        return render(request, 'error.html', {'user': user, 'error_message': '暂无此书籍'})
+    else:
+        return render(request, 'book/look_book_detail_page.html', {'user': user, 'book': book})

@@ -8,6 +8,15 @@ from .forms import *
 from .models import *
 
 
+def get_book_by_book_id(book_id):
+    books = Book.objects.filter(book_id=book_id)
+    if books.exists():
+        book = books[0]
+    else:
+        book = None
+    return book
+
+
 def get_books_by_search_info(keyword="", order_by="-sale_number"):  # 默认按销量降序
     if keyword is None or keyword == "":
         books = Book.objects.all().order_by(order_by)
