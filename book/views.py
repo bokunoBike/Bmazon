@@ -35,12 +35,12 @@ def add_book_page(request):
 
             result = add_one_book(book_dic, book_detail_dic)
             if result:
-                return render(request, 'book/add_book_successfully.html')
+                return render(request, 'book/add_book_successfully.html', {'user': user})
             else:
                 return render(request, 'error.html', {'user': user, 'error_message': '出错啦'})
         else:  # 表单出错
             return render(request, 'book/add_book_page.html', {'user': user, 'add_book_form': add_book_form})
-    else:   # 当正常访问时
+    else:  # 当正常访问时
         add_book_form = AddBookForm
         return render(request, 'book/add_book_page.html', {'user': user, 'add_book_form': add_book_form})
 
@@ -48,9 +48,9 @@ def add_book_page(request):
 @user_passes_test(is_manager, login_url='manager:login')
 def modify_book_page(request):
     user = auth.get_user(request)
-    book_id = request.POST.get('book_id')
+    book_id = request.GET.get('book_id')
     if request.method == 'POST':
-        modify_book_form = ModifyBookForm(request.POST)
+        modify_book_form = ModifyBookForm(request.POST, request.FILES)
         if modify_book_form.is_valid():
             book_name = modify_book_form.cleaned_data.get('name')
             publisher = modify_book_form.cleaned_data.get('publisher')
@@ -67,20 +67,24 @@ def modify_book_page(request):
                         'origin_price': origin_price, 'discount': discount, 'stock': stock}
             book_detail_dic = {'cover': cover, 'catalogue': catalogue, 'summary': summary}
 
-            try:
-                book = Book.objects.save(**dic)
-                book_detail = book.bookdetail
-                book_detail.cover = cover
-                book_detail.catalogue = catalogue
-                book_detail.summary = summary
-                book_detail.save()
-                result = {'result': 1}
-            except Exception as e:
-                result = {'result': 0, 'error_message': e}
-
+            result = modify_book(book_id, book_dic, book_detail_dic)
+            if result:
+                return render(request, 'book/modify_book_successfully.html', {'user': user, 'book_id': book_id})
+            else:
+                return render(request, 'error.html', {'user': user, 'error_message': '出错啦'})
+        else:  # 表单出错
+            return render(request, 'book/modify_book_page.html', {'user': user, 'modify_book_form': modify_book_form})
+    else:  # 当正常访问时
+        book = get_book_by_book_id(book_id)
+        if book is None:
+            return render(request, 'error.html', {'user': user, 'error_message': '出错啦'})
         else:
-            result = {'result': 0, 'error_message': '表格内容有误'}
-        return result
+            modify_book_form = ModifyBookForm(
+                {'book_id': book.book_id, 'name': book.name, 'publisher': book.publisher, 'author': book.author, 'category': book.category,
+                 'origin_price': book.origin_price, 'discount': book.discount, 'stock': book.stock,
+                 'cover': book.bookdetail.cover,
+                 'catalogue': book.bookdetail.catalogue, 'summary': book.bookdetail.summary})
+            return render(request, 'book/modify_book_page.html', {'user': user, 'modify_book_form': modify_book_form})
 
 
 def home(request):
@@ -95,14 +99,14 @@ def home(request):
                           {'user': user, 'search_book_form': search_book_form, 'contacts': contacts})
     else:  # 正常访问
         search_book_form = SearchBookForm
+        books = get_books_by_search_info()
         contacts = get_books_by_search_info_to_page(page=page)
         return render(request, 'book/home.html',
-                      {'user': user, 'search_book_form': search_book_form, 'contacts': contacts})
+                      {'user': user, 'search_book_form': search_book_form, 'contacts': contacts, 'books': books})
 
 
-def look_book_detail_page(request):
+def look_book_detail_page(request, book_id):
     user = auth.get_user(request)
-    book_id = request.GET.get('book_id')
     book = get_book_by_book_id(book_id)
     if book is None:
         return render(request, 'error.html', {'user': user, 'error_message': '暂无此书籍'})

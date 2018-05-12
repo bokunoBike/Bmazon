@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block titile %} 修改书籍信息 {% endblock %}
+
+{% block the_titile %} 修改书籍信息 {% endblock %}
+
+{% block content %}
+    <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% for field in modify_book_form %}
+            <p>{{ field.label_tag }} {{ field }}{% if request.method == "POST" %}{{ field.errors.0 }}{% endif %}</p>
+        {% endfor %}
+        <input type="submit" value="修改">
+    </form>
+{% endblock %}

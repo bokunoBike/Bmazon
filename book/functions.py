@@ -52,3 +52,30 @@ def add_one_book(book_dic, book_detail_dic):
     except Exception as e:
         print(e)
         return False
+
+
+def modify_book(book_id, book_dic, book_detail_dic):
+    book = get_book_by_book_id(book_id)
+    if book is None:
+        return False
+    else:
+        try:
+            book.name = book_dic.get('name')
+            book.publisher = book_dic.get('publisher')
+            book.author = book_dic.get('author')
+            book.category = book_dic.get('category')
+            book.origin_price = book_dic.get('origin_price')
+            book.discount = book_dic.get('discount')
+            book.stock = book_dic.get('stock')
+            book.save()
+            if not (book_detail_dic.get('cover') is None or book_detail_dic.get('cover') == ""):
+                book.bookdetail.cover = book_detail_dic.get('cover', book.bookdetail.cover)
+            if not (book_detail_dic.get('catalogue') is None or book_detail_dic.get('catalogue') == ""):
+                book.bookdetail.catalogue = book_detail_dic.get('catalogue', book.bookdetail.catalogue)
+            if not (book_detail_dic.get('summary') is None or book_detail_dic.get('summary') == ""):
+                book.bookdetail.summary = book_detail_dic.get('summary', book.bookdetail.summary)
+            book.bookdetail.save()
+            return True
+        except Exception as e:
+            print(e)
+            return False

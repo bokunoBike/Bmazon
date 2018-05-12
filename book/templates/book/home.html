@@ -13,6 +13,9 @@
         {{ search_book_form }}
         <input type="submit" value="搜索">
     </form>
+    {% for book in books %}
+        {{ book.name }}
+    {% endfor %}
     {% for contact in contacts %}
         {{ contact.full_name|upper }}
     {% endfor %}

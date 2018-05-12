@@ -8,5 +8,6 @@ app_name = 'book'
 urlpatterns = [
     url(r'^home', views.home, name="home"),
     url(r'^add_book_page', views.add_book_page, name="add_book_page"),
-    url(r'^look_book_detail_page', views.look_book_detail_page, name="look_book_detail_page"),
+    url(r'^modify_book_page', views.modify_book_page, name="modify_book_page"),
+    url(r'^look_book_detail_page/(\d+)', views.look_book_detail_page, name="look_book_detail_page"),
 ]

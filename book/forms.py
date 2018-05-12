@@ -145,13 +145,16 @@ class ModifyBookForm(forms.Form):
         }
     )
     cover = forms.ImageField(
-        label='封面'
+        label='封面',
+        required=False,
     )
     catalogue = forms.FileField(
-        label='目录'
+        label='目录',
+        required=False,
     )
     summary = forms.FileField(
-        label='摘要'
+        label='摘要',
+        required=False,
     )
 
 
