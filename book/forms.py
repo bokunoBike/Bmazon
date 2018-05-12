@@ -28,7 +28,7 @@ class AddBookForm(forms.Form):
     )
     author = forms.CharField(
         label='作者',
-        max_length=20,
+        max_length=30,
         error_messages={
             "required": "作者不能为空！",
             "max_length": "超出长度！",
@@ -42,14 +42,12 @@ class AddBookForm(forms.Form):
             "max_length": "超出长度！",
         }
     )
-    origin_price = forms.DecimalField(
+    origin_price = forms.FloatField(
         label='原价',
-        decimal_places=2,
-        max_digits=2,
-        validators=[validate_not_negative_number],
+        min_value=0,
         error_messages={
             "required": "原价不能为空！",
-            "max_value": "超出最大值！",
+            "min_value": "不能为负数！",
         }
     )
     discount = forms.DecimalField(
@@ -61,17 +59,25 @@ class AddBookForm(forms.Form):
         validators=[validate_discount],
         error_messages={
             "max_value": "超出最大值！",
-            "min_value": "超出最小值！",
+            "min_value": "不能为负数！",
         }
     )
     stock = forms.IntegerField(
         label='库存',
+        min_value=0,
+        error_messages={
+            "min_value": "不能为负数！",
+        }
     )
     cover = forms.ImageField(
-        label='封面'
+        label='封面',
     )
-    catalogue = forms.Textarea(attrs={'cols': '40', 'rows': '7'})
-    summary = forms.Textarea(attrs={'cols': '40', 'rows': '25'})
+    catalogue = forms.FileField(
+        label='目录'
+    )
+    summary = forms.FileField(
+        label='摘要'
+    )
 
 
 class ModifyBookForm(forms.Form):
@@ -81,7 +87,7 @@ class ModifyBookForm(forms.Form):
     book_id = forms.HiddenInput()
     name = forms.CharField(
         label='书名',
-        max_length=20,
+        max_length=30,
         error_messages={
             "required": "书名不能为空！",
             "max_length": "超出长度！",
@@ -111,13 +117,12 @@ class ModifyBookForm(forms.Form):
             "max_length": "超出长度！",
         }
     )
-    origin_price = forms.DecimalField(
+    origin_price = forms.FloatField(
         label='原价',
-        decimal_places=2,
-        max_digits=2,
-        validators=[validate_not_negative_number],
+        min_value=0,
         error_messages={
             "required": "原价不能为空！",
+            "min_value": "不能为负数！",
         }
     )
     discount = forms.DecimalField(
@@ -134,12 +139,20 @@ class ModifyBookForm(forms.Form):
     )
     stock = forms.IntegerField(
         label='库存',
+        min_value=0,
+        error_messages={
+            "min_value": "不能为负数！",
+        }
     )
     cover = forms.ImageField(
         label='封面'
     )
-    catalogue = forms.Textarea(attrs={'cols': '40', 'rows': '7'})
-    summary = forms.Textarea(attrs={'cols': '40', 'rows': '25'})
+    catalogue = forms.FileField(
+        label='目录'
+    )
+    summary = forms.FileField(
+        label='摘要'
+    )
 
 
 class SearchBookForm(forms.Form):

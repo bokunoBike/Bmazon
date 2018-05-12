@@ -15,7 +15,7 @@ from manager.functions import is_manager
 def add_book_page(request):
     user = auth.get_user(request)
     if request.method == 'POST':
-        add_book_form = AddBookForm(request.POST)
+        add_book_form = AddBookForm(request.POST, request.FILES)
         if add_book_form.is_valid():
             book_name = add_book_form.cleaned_data.get('name')
             publisher = add_book_form.cleaned_data.get('publisher')
@@ -28,7 +28,7 @@ def add_book_page(request):
             catalogue = add_book_form.cleaned_data.get('catalogue')
             summary = add_book_form.cleaned_data.get('summary')
 
-            book_dic = {'book_name': book_name, 'publisher': publisher, 'author': author, 'category': category,
+            book_dic = {'name': book_name, 'publisher': publisher, 'author': author, 'category': category,
                         'origin_price': origin_price, 'discount': discount, 'stock': stock}
             book_detail_dic = {'cover': cover, 'catalogue': catalogue, 'summary': summary}
 
@@ -36,9 +36,9 @@ def add_book_page(request):
             if result:
                 return render(request, 'book/add_book_successfully.html')
             else:
-                return render(request, 'book/add_book_page.html', {'user': user, 'add_book_form': add_book_form})
-        else:
-            return render(request, 'error.html', {'user': user, 'error_message': '出错啦'})
+                return render(request, 'error.html', {'user': user, 'error_message': '出错啦'})
+        else:  # 表单出错
+            return render(request, 'book/add_book_page.html', {'user': user, 'add_book_form': add_book_form})
     else:   # 当正常访问时
         add_book_form = AddBookForm
         return render(request, 'book/add_book_page.html', {'user': user, 'add_book_form': add_book_form})

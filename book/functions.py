@@ -38,7 +38,8 @@ def add_one_book(book_dic, book_detail_dic):
         book_detail.catalogue = book_detail_dic.get('catalogue')
         book_detail.summary = book_detail_dic.get('summary')
         book_detail.save()
+        print('添加书籍 ' + book.name + ' 成功！')
         return True
     except Exception as e:
+        print(e)
         return False
-

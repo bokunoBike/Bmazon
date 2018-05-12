@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block titile %}默认标题{% endblock %}</title>
+</head>
+<body>
+    <h1>{% block the_titile %}默认标题{% endblock %}</h1>
+    <hr />
+    {% include 'user_item_template.html' %}
+
+    {% block content %}
+    {% endblock %}
+</body>
+</html>
