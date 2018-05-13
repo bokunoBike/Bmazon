@@ -156,14 +156,3 @@ class ModifyBookForm(forms.Form):
         label='摘要',
         required=False,
     )
-
-
-class SearchBookForm(forms.Form):
-    """
-    查询书籍表单
-    """
-    search_info = forms.CharField(
-        label='搜索书籍',
-        max_length=30,
-    )
-    # order_by = forms.ModelChoiceField(label=u'排序', queryset=['销量', '价格', '上架时间'])

@@ -1,0 +1,5 @@
+    <form action="{% if user.is_staff %}{% url 'manager:home' %}{% else %}{% url 'user:home' %}{% endif %}" method="post">
+        {% csrf_token %}
+        搜索书籍：<input type="text" maxlength="30" name="search_info">
+        <input type="submit" value="搜索">
+    </form>

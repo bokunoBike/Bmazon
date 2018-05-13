@@ -5,11 +5,6 @@
 {% block the_titile %} Bmazon {% endblock %}
 
 {% block content %}
-    <form action="" method="post">
-        {% csrf_token %}
-        {{ search_book_form }}
-        <input type="submit" value="搜索">
-    </form>
     {% for book in contacts.object_list %}
         <a href={% url 'manager:look_book_detail_page' book.book_id %}> {{ book.name }}</a>
         <br>

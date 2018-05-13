@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 
 from .forms import *
 from .functions import *
-from book.forms import AddBookForm, ModifyBookForm, SearchBookForm
+from book.forms import AddBookForm, ModifyBookForm
 from book.functions import add_one_book, modify_book, get_book_by_book_id, get_books_by_search_info, get_books_to_page
 
 
@@ -40,19 +40,16 @@ def home(request):
     user = auth.get_user(request)
     page = request.GET.get('page', 1)
     if request.method == 'POST':
-        search_book_form = SearchBookForm(request.POST)
-        if search_book_form.is_valid():
-            search_info = search_book_form.cleaned_data.get('search_info')
-            books = get_books_by_search_info(search_info)
-            contacts = get_books_to_page(books, page=page)
-            return render(request, 'manager/home.html',
-                          {'user': user, 'search_book_form': search_book_form, 'contacts': contacts})
+        search_info = request.POST.get('search_info', "")
+        books = get_books_by_search_info(search_info)
+        contacts = get_books_to_page(books, page=page)
+        return render(request, 'manager/home.html',
+                      {'user': user, 'contacts': contacts, })
     else:  # 正常访问
-        search_book_form = SearchBookForm
         books = get_books_by_search_info()
         contacts = get_books_to_page(books, page=page)
         return render(request, 'manager/home.html',
-                      {'user': user, 'search_book_form': search_book_form, 'contacts': contacts, })
+                      {'user': user, 'contacts': contacts, })
 
 
 @user_passes_test(is_manager, login_url='manager:login')

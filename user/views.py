@@ -11,7 +11,6 @@ from .functions import *
 from book.functions import get_book_by_user_trove, get_books_to_page, get_book_by_book_id, \
     get_books_by_search_info, get_book_by_user_shopping_cart
 from order.functions import create_order, get_order_by_user
-from book.forms import SearchBookForm
 
 
 def login(request):  # 登录页面
@@ -58,19 +57,16 @@ def home(request):
     user = auth.get_user(request)
     page = request.GET.get('page', 1)
     if request.method == 'POST':
-        search_book_form = SearchBookForm(request.POST)
-        if search_book_form.is_valid():
-            search_info = search_book_form.cleaned_data.get('search_info')
-            books = get_books_by_search_info(search_info, ignore_sold_out=True)
-            contacts = get_books_to_page(books, page=page)
-            return render(request, 'user/home.html',
-                          {'user': user, 'search_book_form': search_book_form, 'contacts': contacts})
+        search_info = request.POST.get('search_info', "")
+        books = get_books_by_search_info(search_info, ignore_sold_out=True)
+        contacts = get_books_to_page(books, page=page)
+        return render(request, 'user/home.html',
+                      {'user': user, 'contacts': contacts, })
     else:  # 正常访问
-        search_book_form = SearchBookForm
         books = get_books_by_search_info(ignore_sold_out=True)
         contacts = get_books_to_page(books, page=page)
         return render(request, 'user/home.html',
-                      {'user': user, 'search_book_form': search_book_form, 'contacts': contacts, })
+                      {'user': user, 'contacts': contacts, })
 
 
 def look_book_detail_page(request, book_id):
