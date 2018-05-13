@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>主页</title>
+</head>
+<a>
+    <h1>Bmazon</h1>
+    <hr />
+    {% include 'user_item_template.html' %}
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ search_book_form }}
+        <input type="submit" value="搜索">
+    </form>
+    {% for book in contacts.object_list %}
+        <a href={% url 'book:look_book_detail_page' book.book_id %}> {{ book.name }}</a>
+        <br>
+    {% endfor %}
+    {% include 'page_template.html' %}
+</body>
+</html>

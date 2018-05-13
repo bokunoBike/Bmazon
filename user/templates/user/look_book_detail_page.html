@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block titile %} {{ book.name }} {% endblock %}
+
+{% block the_titile %} {{ book.name }} {% endblock %}
+
+{% block content %}
+    <p>书名：{{ book.name }}</p>
+    <p>作者：{{ book.author }}</p>
+    <p>出版社：{{ book.publisher }}</p>
+    <p>价格：{{ book.origin_price }}</p>
+    <p>折扣：{{ book.discount }}</p>
+    <p>库存：{{ book.stock }}</p>
+    <p>销量：{{ book.sale_number }}</p>
+    <p>封面：<br><img src="/media/{{ book.bookdetail.cover }}"></p>
+    <p>目录：<br>
+    <div id="catalogue_text_display" name="catalogue"></div></p>
+    <p>摘要：<br>
+    <div id="summary_text_display" name="summary"></div></p>
+    <br><br>
+
+    <a href="{% url 'user:trove_or_cancel_trove_book' book.book_id %}?redirect_to={{ request.path }}">
+        {% if has_reserved %}取消收藏{% else %}收藏{% endif %}</a>
+{% endblock %}
+
+{% block script %}
+    <style type="text/css">
+        div {
+            border-radius: 5px;
+            border: 1px solidred;
+            padding: 10px;
+        }
+
+        #catalogue_text_display {
+            min-height: 250px;
+            overflow-y: auto;
+            max-height: 300px;
+            max-width: 600px;
+        }
+    </style>
+    <style type="text/css">
+        div {
+            border-radius: 5px;
+            border: 1px solidred;
+            padding: 10px;
+        }
+
+        #summary_text_display {
+            min-height: 250px;
+            overflow-y: auto;
+            max-height: 300px;
+            max-width: 600px;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $.ajax({
+                url: "/media/{{ book.bookdetail.catalogue }}",
+                type: "GET",
+                dataType: "text",
+                contentType: "application/x-www-form-urlencoded; charset=utf-8",
+                success: function (data) {
+                    var catalogue_block = document.getElementById('catalogue_text_display');
+                    catalogue_block.innerText = data;
+                },
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(function () {
+            $.ajax({
+                url: "/media/{{ book.bookdetail.summary }}",
+                type: "GET",
+                dataType: "text",
+                contentType: "application/x-www-form-urlencoded; charset=utf-8",
+                success: function (data) {
+                    var summary_block = document.getElementById('summary_text_display');
+                    summary_block.innerText = data;
+                },
+            });
+        });
+    </script>
+{% endblock %}

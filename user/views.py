@@ -6,7 +6,9 @@ from django.http import HttpResponseRedirect
 from .forms import *
 from .models import *
 from .functions import *
-from book.functions import get_book_by_user_trove, get_books_to_page, get_book_by_book_id
+from book.functions import get_book_by_user_trove, get_books_to_page, get_book_by_book_id, \
+    get_books_by_search_info_on_sale
+from book.forms import SearchBookForm
 
 
 def login(request):  # 登录页面
@@ -47,6 +49,36 @@ def register(request):  # 注册页面
 def logout(request):
     auth.logout(request)  # 注销用户
     return redirect(reverse('book:home'))
+
+
+def home(request):
+    user = auth.get_user(request)
+    page = request.GET.get('page', 1)
+    if request.method == 'POST':
+        search_book_form = SearchBookForm(request.POST)
+        if search_book_form.is_valid():
+            search_info = search_book_form.cleaned_data.get('search_info')
+            books = get_books_by_search_info_on_sale(search_info)
+            contacts = get_books_to_page(books, page=page)
+            return render(request, 'user/home.html',
+                          {'user': user, 'search_book_form': search_book_form, 'contacts': contacts})
+    else:  # 正常访问
+        search_book_form = SearchBookForm
+        books = get_books_by_search_info_on_sale()
+        contacts = get_books_to_page(books, page=page)
+        return render(request, 'user/home.html',
+                      {'user': user, 'search_book_form': search_book_form, 'contacts': contacts, })
+
+
+def look_book_detail_page(request, book_id):
+    user = auth.get_user(request)
+    book = get_book_by_book_id(book_id)
+    if book is None:
+        return render(request, 'error.html', {'user': user, 'error_message': '暂无此书籍'})
+    else:
+        has_reserved = has_reserved_book(user, book.book_id)
+        return render(request, 'user/look_book_detail_page.html',
+                      {'user': user, 'book': book, 'has_reserved': has_reserved})
 
 
 @login_required(login_url='user:login')

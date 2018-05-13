@@ -5,5 +5,5 @@
 {% block the_titile %} 修改书籍信息成功! {% endblock %}
 
 {% block content %}
-    修改书籍信息成功！ <a href={% url 'book:look_book_detail_page' {{ book_id }} %}>查看</a>
+    修改书籍信息成功！ <a href={% url 'manager:look_book_detail_page' {{ book_id }} %}>查看</a>
 {% endblock %}
