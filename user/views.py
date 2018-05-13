@@ -21,7 +21,7 @@ def login(request):  # 登录页面
             user = auth.authenticate(request, username=username, password=password)
             if user is not None:  # 登录成功
                 auth.login(request, user)
-                redirect_to = request.POST.get('redirect_to', reverse('book:home'))
+                redirect_to = request.POST.get('redirect_to', reverse('user:home'))
                 # print(redirect_to)
                 return redirect(redirect_to)
             else:
@@ -30,7 +30,7 @@ def login(request):  # 登录页面
             return render(request, 'user/login.html', {'login_form': login_form})
     else:  # 正常访问
         login_form = LoginForm
-        redirect_to = request.GET.get('redirect_to', reverse('book:home'))
+        redirect_to = request.GET.get('redirect_to', reverse('user:home'))
         return render(request, 'user/login.html', {'login_form': login_form, 'redirect_to': redirect_to})
 
 
@@ -38,7 +38,7 @@ def register(request):  # 注册页面
     if request.method == 'POST':
         register_form = RegisterForm(request.POST)
         if register_user(request, register_form):
-            return render(request, 'book/home.html')
+            return render(request, 'user/home.html')
         else:
             return render(request, 'user/register.html', {'register_form': register_form})
     else:  # 当正常访问时
@@ -48,7 +48,7 @@ def register(request):  # 注册页面
 
 def logout(request):
     auth.logout(request)  # 注销用户
-    return redirect(reverse('book:home'))
+    return redirect(reverse('user:home'))
 
 
 def home(request):

@@ -35,6 +35,7 @@ def logout(request):
     return redirect(reverse('manager:home'))
 
 
+@user_passes_test(is_manager, login_url='manager:login')
 def home(request):
     user = auth.get_user(request)
     page = request.GET.get('page', 1)
@@ -54,6 +55,7 @@ def home(request):
                       {'user': user, 'search_book_form': search_book_form, 'contacts': contacts, })
 
 
+@user_passes_test(is_manager, login_url='manager:login')
 def look_book_detail_page(request, book_id):
     user = auth.get_user(request)
     book = get_book_by_book_id(book_id)
@@ -98,9 +100,8 @@ def add_book_page(request):
 
 
 @user_passes_test(is_manager, login_url='manager:login')
-def modify_book_page(request):
+def modify_book_page(request, book_id):
     user = auth.get_user(request)
-    book_id = request.GET.get('book_id')
     if request.method == 'POST':
         modify_book_form = ModifyBookForm(request.POST, request.FILES)
         if modify_book_form.is_valid():
@@ -150,6 +151,7 @@ def sold_out_or_putaway(request, book_id):
         book.is_on_sale = False  # 下架
     else:
         book.is_on_sale = True  # 上架
+    book.save()
     return redirect(redirect_to)
 
 

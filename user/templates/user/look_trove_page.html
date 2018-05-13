@@ -7,7 +7,7 @@
 {% block content %}
     {% for book in contacts.object_list %}
         <br>
-        <a href={% url 'book:look_book_detail_page' book.book_id %}> {{ book.name }}</a>
+        <a href={% url 'user:look_book_detail_page' book.book_id %}> {{ book.name }}</a>
     {% endfor %}
     {% include 'page_template.html' %}
 {% endblock %}

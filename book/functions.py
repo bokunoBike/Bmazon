@@ -18,7 +18,7 @@ def get_book_by_book_id(book_id):
 
 
 def get_book_by_user_trove(user):
-    books = user.profile.trove_books.all()
+    books = user.profile.trove_books.filter(is_on_sale=True)
     return books
 
 

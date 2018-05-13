@@ -18,6 +18,9 @@
     <p>摘要：<br>
     <div id="summary_text_display" name="summary"></div></p>
     <br><br>
+    <a href="{% url 'manager:sold_out_or_putaway' book.book_id %}?redirect_to={{ request.path }}">
+        {% if book.is_on_sale %}下架{% else %}上架{% endif %}</a>
+    <a href="{% url 'manager:modify_book_page' book.book_id %}">修改信息</a>
 {% endblock %}
 
 {% block script %}
