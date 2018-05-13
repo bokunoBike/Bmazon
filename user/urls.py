@@ -12,4 +12,5 @@ urlpatterns = [
     url(r'^look_orders', views.look_orders, name="look_orders"),
     url(r'^look_shopping_cart', views.look_shopping_cart, name="look_shopping_cart"),
     url(r'^look_trove_page', views.look_trove_page, name="look_trove_page"),
+    url(r'^trove_or_cancel_trove_book/(\d+)', views.trove_or_cancel_trove_book, name="trove_or_cancel_trove_book"),
 ]

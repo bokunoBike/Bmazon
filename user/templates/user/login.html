@@ -9,6 +9,7 @@
     <hr />
     <form action="{% url 'user:login' %}" method="post">
         {% csrf_token %}
+        <input type="hidden" name="redirect_to" value="{{ redirect_to }}">
         {% for field in login_form %}
             <p>{{ field.label_tag }} {{ field }}{% if request.method == "POST" %}{{ field.errors.0 }}{% endif %}</p>
         {% endfor %}

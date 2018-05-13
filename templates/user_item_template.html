@@ -1,6 +1,6 @@
     {% if user.is_anonymous %}
         欢迎您，游客！<br>
-        <a href={% url 'user:login' %}>登录</a>
+        <a href={% url 'user:login'%}?redirect_to={{ request.path }}>登录</a>
         <a href={% url 'user:register' %}>注册</a>
     {% elif user.is_staff %}
         欢迎您，管理员{{user.username}}!<br>

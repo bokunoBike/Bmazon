@@ -10,6 +10,7 @@ from .forms import *
 from .models import *
 from .functions import *
 from manager.functions import is_manager
+from user.functions import has_reserved_book
 
 
 @user_passes_test(is_manager, login_url='manager:login')
@@ -80,7 +81,8 @@ def modify_book_page(request):
             return render(request, 'error.html', {'user': user, 'error_message': '出错啦'})
         else:
             modify_book_form = ModifyBookForm(
-                {'book_id': book.book_id, 'name': book.name, 'publisher': book.publisher, 'author': book.author, 'category': book.category,
+                {'book_id': book.book_id, 'name': book.name, 'publisher': book.publisher, 'author': book.author,
+                 'category': book.category,
                  'origin_price': book.origin_price, 'discount': book.discount, 'stock': book.stock,
                  'cover': book.bookdetail.cover,
                  'catalogue': book.bookdetail.catalogue, 'summary': book.bookdetail.summary})
@@ -103,7 +105,7 @@ def home(request):
         books = get_books_by_search_info()
         contacts = get_books_to_page(books, page=page)
         return render(request, 'book/home.html',
-                      {'user': user, 'search_book_form': search_book_form, 'contacts': contacts,})
+                      {'user': user, 'search_book_form': search_book_form, 'contacts': contacts, })
 
 
 def look_book_detail_page(request, book_id):
@@ -112,4 +114,6 @@ def look_book_detail_page(request, book_id):
     if book is None:
         return render(request, 'error.html', {'user': user, 'error_message': '暂无此书籍'})
     else:
-        return render(request, 'book/look_book_detail_page.html', {'user': user, 'book': book})
+        has_reserved = has_reserved_book(user, book.book_id)
+        return render(request, 'book/look_book_detail_page.html',
+                      {'user': user, 'book': book, 'has_reserved': has_reserved})
