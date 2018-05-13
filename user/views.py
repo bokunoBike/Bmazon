@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from .forms import *
 from .models import *
 from .functions import *
+from book.functions import get_book_by_user_trove, get_books_to_page
 
 
 def login(request):  # 登录页面
@@ -55,5 +56,9 @@ def look_shopping_cart(request):
 
 
 @login_required(login_url='user:login')
-def look_trove(request):
-    pass
+def look_trove_page(request):
+    user = auth.get_user(request)
+    page = request.GET.get('page', 1)
+    books = get_book_by_user_trove(user)
+    contacts = get_books_to_page(books, page=page)
+    return render(request, 'user/look_trove_page.html', {'user': user, 'contacts': contacts})

@@ -11,5 +11,5 @@ urlpatterns = [
     url(r'^register', views.register, name="register"),
     url(r'^look_orders', views.look_orders, name="look_orders"),
     url(r'^look_shopping_cart', views.look_shopping_cart, name="look_shopping_cart"),
-    url(r'^look_trove', views.look_trove, name="look_trove"),
+    url(r'^look_trove_page', views.look_trove_page, name="look_trove_page"),
 ]

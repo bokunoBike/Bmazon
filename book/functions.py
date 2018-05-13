@@ -17,6 +17,11 @@ def get_book_by_book_id(book_id):
     return book
 
 
+def get_book_by_user_trove(user):
+    books = user.profile.trove_books.all()
+    return books
+
+
 def get_books_by_search_info(keyword="", order_by="-sale_number"):  # 默认按销量降序
     if keyword is None or keyword == "":
         books = Book.objects.all().order_by(order_by)
@@ -27,8 +32,7 @@ def get_books_by_search_info(keyword="", order_by="-sale_number"):  # 默认按�
     return books
 
 
-def get_books_by_search_info_to_page(keyword="", order_by="-sale_number", page=1):
-    books = get_books_by_search_info(keyword, order_by)
+def get_books_to_page(books, page=1):
     paginator = Paginator(books, 10)
     try:
         contacts = paginator.page(page)

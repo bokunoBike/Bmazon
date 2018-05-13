@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block titile %} 我的收藏 {% endblock %}
+
+{% block the_titile %} 我的收藏 {% endblock %}
+
+{% block content %}
+    {% for book in contacts.object_list %}
+        <br>
+        <a href={% url 'book:look_book_detail_page' book.book_id %}> {{ book.name }}</a>
+    {% endfor %}
+    {% include 'page_template.html' %}
+{% endblock %}

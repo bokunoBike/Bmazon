@@ -94,15 +94,16 @@ def home(request):
         search_book_form = SearchBookForm(request.POST)
         if search_book_form.is_valid():
             search_info = search_book_form.cleaned_data.get('search_info')
-            contacts = get_books_by_search_info_to_page(keyword=search_info, page=page)
+            books = get_books_by_search_info(search_info)
+            contacts = get_books_to_page(books, page=page)
             return render(request, 'book/home.html',
                           {'user': user, 'search_book_form': search_book_form, 'contacts': contacts})
     else:  # 正常访问
         search_book_form = SearchBookForm
         books = get_books_by_search_info()
-        contacts = get_books_by_search_info_to_page(page=page)
+        contacts = get_books_to_page(books, page=page)
         return render(request, 'book/home.html',
-                      {'user': user, 'search_book_form': search_book_form, 'contacts': contacts, 'books': books})
+                      {'user': user, 'search_book_form': search_book_form, 'contacts': contacts,})
 
 
 def look_book_detail_page(request, book_id):
