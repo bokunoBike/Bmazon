@@ -5,10 +5,14 @@
 {% block the_titile %} 我的收藏 {% endblock %}
 
 {% block content %}
-    {% for book in contacts.object_list %}
-        <br>
-        <a href={% url 'user:look_book_detail_page' book.book_id %}> {{ book.name }}</a>
-        {% if not book.is_on_sale %}已下架{% else %}销售中{% endif %}
-    {% endfor %}
+    {% if contacts.object_list.exists %}
+        {% for book in contacts.object_list %}
+            <br>
+            <a href={% url 'user:look_book_detail_page' book.book_id %}> {{ book.name }}</a>
+            {% if not book.is_on_sale %}已下架{% else %}销售中{% endif %}
+        {% endfor %}
+    {% else %}
+        还没有收藏的书籍，<a href="{% url 'user:home' %}">去逛书城</a>
+    {% endif %}
     {% include 'page_bar_template.html' %}
 {% endblock %}
