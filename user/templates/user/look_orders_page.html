@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block titile %} 我的订单 {% endblock %}
+
+{% block the_titile %} 我的订单 {% endblock %}
+
+{% block content %}
+    {% for order in contacts.object_list %}
+        <table>
+        <th>订单号</th> <th>书籍</th> <th>作者</th> <th>出版社</th> <th>数量</th> <th>价格</th> <th>总价</th> <th>状态</th> <th>时间</th>
+        <tr>
+            <td>{{ order.order_id }}</td>
+            <td><a href={% url 'user:look_book_detail_page' order.book.book_id %}> {{ order.book.name }}</a></td>
+            <td>{{ order.book.author }}</td>
+            <td>{{ order.book.publisher }}</td>
+            <td>{{ order.sale_count }}</td>
+            <td>{{ order.price }}</td>
+            <td>{{ order.total_fees }}</td>
+            <td>{% if order.status == 0 %}已取消
+                {% elif order.status == 1 %}待付款
+                {% elif order.status == 2 %}待处理
+                {% elif order.status == 3 %}待发货
+                {% elif order.status == 4 %}已收货
+                {% elif order.status == 5 %}已过期
+                {% elif order.status == 6 %}申请退款
+                {% elif order.status == 7 %}退款通过
+                {% elif order.status == 8 %}退款驳回{% endif %}</td>
+            <td>{{ order.create_date }}</td>
+        </tr>
+        </table>
+    {% endfor %}
+    {% include 'page_bar_template.html' %}
+{% endblock %}

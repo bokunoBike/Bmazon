@@ -17,28 +17,35 @@ def get_book_by_book_id(book_id):
     return book
 
 
-def get_book_by_user_trove(user):
-    books = user.profile.trove_books.filter(is_on_sale=True)
+def get_book_by_user_trove(user, ignore_sold_out=False):
+    books = user.profile.trove_books.all()
+    if ignore_sold_out:
+        books = books.filter(is_on_sale=True)
     return books
 
 
-def get_books_by_search_info_on_sale(keyword="", order_by="-sale_number"):  # 默认按销量降序
-    if keyword is None or keyword == "":
-        books = Book.objects.filter(is_on_sale=True).order_by(order_by)
-    else:
-        books = Book.objects.filter(
-            Q(name__icontains=keyword) | Q(publisher__icontains=keyword) | Q(author__icontains=keyword) | Q(
-                category=keyword)).order_by(order_by)
+def get_book_by_user_shopping_cart(user, ignore_sold_out=False):
+    books = user.profile.shopping_cart.all()
+    if ignore_sold_out:
+        books = books.filter(is_on_sale=True)
     return books
 
 
-def get_books_by_search_info(keyword="", order_by="-sale_number"):  # 默认按销量降序
-    if keyword is None or keyword == "":
-        books = Book.objects.filter(is_on_sale=True).order_by(order_by)
+def get_books_by_search_info(keyword="", order_by="-sale_number", ignore_sold_out=False):  # 默认按销量降序
+    if ignore_sold_out:  # 忽视已下架的书籍
+        if keyword is None or keyword == "":
+            books = Book.objects.filter(is_on_sale=True).order_by(order_by)
+        else:
+            books = Book.objects.filter(
+                Q(name__icontains=keyword) | Q(publisher__icontains=keyword) | Q(author__icontains=keyword) | Q(
+                    category=keyword)).filter(is_on_sale=True).order_by(order_by)
     else:
-        books = Book.objects.filter(
-            Q(name__icontains=keyword) | Q(publisher__icontains=keyword) | Q(author__icontains=keyword) | Q(
-                category=keyword)).order_by(order_by)
+        if keyword is None or keyword == "":
+            books = Book.objects.all().order_by(order_by)
+        else:
+            books = Book.objects.filter(
+                Q(name__icontains=keyword) | Q(publisher__icontains=keyword) | Q(author__icontains=keyword) | Q(
+                    category=keyword)).order_by(order_by)
     return books
 
 

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block titile %} 购买结果 {% endblock %}
+
+{% block the_titile %} 购买结果 {% endblock %}
+
+{% block content %}
+    {% for book in success_orders %}
+        <br>
+        购买<a href={% url 'user:look_book_detail_page' book.book_id %}> {{ book.name }}</a>成功！请及时付款~
+    {% endfor %}
+
+    {% for fail_order in fail_orders %}
+        <br>
+        购买<a href={% url 'user:look_book_detail_page' fail_order.book.book_id %}> {{ fail_order.book.name }}</a>失败！
+        {{ fail_order.fail_message }}
+    {% endfor %}
+    <a href={% url 'user:look_orders_page' %}>去付款</a> <a href={% url 'user:look_shopping_cart_page' %}>继续购买</a>
+{% endblock %}

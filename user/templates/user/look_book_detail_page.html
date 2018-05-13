@@ -21,6 +21,7 @@
 
     <a href="{% url 'user:trove_or_cancel_trove_book' book.book_id %}?redirect_to={{ request.path }}">
         {% if has_reserved %}取消收藏{% else %}收藏{% endif %}</a>
+    <a href="{% url 'user:add_book_to_shopping_cart' book.book_id %}">添加到购物车</a>
 {% endblock %}
 
 {% block script %}

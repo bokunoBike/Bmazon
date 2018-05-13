@@ -2,12 +2,15 @@ from django.shortcuts import render, redirect, reverse
 import django.contrib.auth as auth
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponseRedirect
+from django import forms
+from django.views.decorators.http import require_http_methods
 
 from .forms import *
 from .models import *
 from .functions import *
 from book.functions import get_book_by_user_trove, get_books_to_page, get_book_by_book_id, \
-    get_books_by_search_info_on_sale
+    get_books_by_search_info, get_book_by_user_shopping_cart
+from order.functions import create_order, get_order_by_user
 from book.forms import SearchBookForm
 
 
@@ -58,13 +61,13 @@ def home(request):
         search_book_form = SearchBookForm(request.POST)
         if search_book_form.is_valid():
             search_info = search_book_form.cleaned_data.get('search_info')
-            books = get_books_by_search_info_on_sale(search_info)
+            books = get_books_by_search_info(search_info, ignore_sold_out=True)
             contacts = get_books_to_page(books, page=page)
             return render(request, 'user/home.html',
                           {'user': user, 'search_book_form': search_book_form, 'contacts': contacts})
     else:  # 正常访问
         search_book_form = SearchBookForm
-        books = get_books_by_search_info_on_sale()
+        books = get_books_by_search_info(ignore_sold_out=True)
         contacts = get_books_to_page(books, page=page)
         return render(request, 'user/home.html',
                       {'user': user, 'search_book_form': search_book_form, 'contacts': contacts, })
@@ -82,13 +85,60 @@ def look_book_detail_page(request, book_id):
 
 
 @login_required(login_url='user:login')
-def look_orders(request):
-    pass
+def look_orders_page(request):
+    user = auth.get_user(request)
+    page = request.GET.get('page', 1)
+    orders = get_order_by_user(user)
+    contacts = get_books_to_page(orders, page=page)
+    return render(request, 'user/look_orders_page.html', {'user': user, 'contacts': contacts})
 
 
 @login_required(login_url='user:login')
-def look_shopping_cart(request):
-    pass
+def look_shopping_cart_page(request):
+    user = auth.get_user(request)
+    books = get_book_by_user_shopping_cart(user)[0:20]  # 限制返回最多20个
+    for book in books:
+        book.price = book.origin_price * float(book.discount)
+    return render(request, 'user/look_shopping_cart_page.html', {'user': user, 'books': books})
+
+
+@login_required(login_url='user:login')
+def add_book_to_shopping_cart(request, book_id):
+    user = auth.get_user(request)
+    book = get_book_by_book_id(book_id)
+    if book is not None and book not in get_book_by_user_shopping_cart(user):
+        user.profile.shopping_cart.add(book)
+    return redirect(reverse('user:look_book_detail_page', args=[book_id]))
+
+
+@login_required(login_url='user:login')
+def drop_book_from_shopping_cart(request, book_id):
+    user = auth.get_user(request)
+    book = get_book_by_book_id(book_id)
+    if book is not None and book in get_book_by_user_shopping_cart(user):
+        user.profile.shopping_cart.remove(book)
+    return redirect(reverse('user:look_shopping_cart_page'))
+
+
+@require_http_methods(["POST"])
+@login_required(login_url='user:login')
+def shopping_cart_to_orders(request):
+    user = auth.get_user(request)
+    books = get_book_by_user_shopping_cart(user, ignore_sold_out=False)
+    fail_orders = []
+    success_orders = []
+    for book in books:
+        sale_count = int(request.POST.get(str(book.book_id), '0'))
+        if sale_count <= 0:
+            continue
+        result = create_order(book, user, sale_count)
+        if result.get('result', False):
+            success_orders.append(book)
+        else:
+            fail_orders.append({'book': book, 'fail_message': result.get('fail_message', 'error!')})
+
+    return render(request, 'user/purchase_result.html',
+                  {'user': user, 'success_orders': success_orders, 'fail_orders': fail_orders})
 
 
 @login_required(login_url='user:login')

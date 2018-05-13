@@ -1,12 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>主页</title>
-</head>
-    <h1>Bmazon</h1>
-    <hr />
-    {% include 'user_item_template.html' %}
+{% extends 'base.html' %}
+
+{% block titile %} 主页 {% endblock %}
+
+{% block the_titile %} Bmazon {% endblock %}
+
+{% block content %}
     <form action="" method="post">
         {% csrf_token %}
         {{ search_book_form }}
@@ -16,6 +14,5 @@
         <a href={% url 'manager:look_book_detail_page' book.book_id %}> {{ book.name }}</a>
         <br>
     {% endfor %}
-    {% include 'page_template.html' %}
-</body>
-</html>
+    {% include 'page_bar_template.html' %}
+{% endblock %}
