@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 
 from .forms import *
 from .functions import *
+from order.functions import get_orders_by_user
 from book.forms import AddBookForm, ModifyBookForm
 from book.functions import add_one_book, modify_book, get_book_by_book_id, get_books_by_search_info, get_books_to_page
 

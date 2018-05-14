@@ -13,6 +13,9 @@ urlpatterns = [
     url(r'^home', views.home, name="home"),
     url(r'^look_book_detail_page/(\d+)', views.look_book_detail_page, name="look_book_detail_page"),
 
+    url(r'^look_user_information_page', views.look_user_information_page, name="look_user_information_page"),
+    url(r'^add_receive_information_page', views.add_receive_information_page, name="add_receive_information_page"),
+
     url(r'^look_orders_page', views.look_orders_page, name="look_orders_page"),
     url(r'^cancel_order', views.cancel_order, name="cancel_order"),
 

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block titile %} 添加收货地址 {% endblock %}
+
+{% block the_titile %} 添加收货地址 {% endblock %}
+
+{% block content %}
+    <form action="" method="post">
+        {% csrf_token %}
+        {% for field in receive_information_form %}
+            <p>{{ field.label_tag }} {{ field }}{% if request.method == "POST" %}{{ field.errors.0 }}{% endif %}</p>
+        {% endfor %}
+        <input type="submit" value="添加地址">
+    </form>
+{% endblock %}

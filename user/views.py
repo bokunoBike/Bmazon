@@ -100,7 +100,7 @@ def cancel_order(request):
 @login_required(login_url='user:login')
 def look_shopping_cart_page(request):
     user = auth.get_user(request)
-    add_receive_information_form = AddReceiveInformationForm
+    add_receive_information_form = ReceiveInformationForm
     books = get_book_by_user_shopping_cart(user)[0:20]  # 限制返回最多20个
     for book in books:
         book.price = book.origin_price * float(book.discount)
@@ -153,7 +153,7 @@ def shopping_cart_to_orders(request):
         phone = receive_information.phone
         recipient = receive_information.recipient
     else:
-        add_receive_information_form = AddReceiveInformationForm(request.POST)
+        add_receive_information_form = ReceiveInformationForm(request.POST)
         if add_receive_information_form.is_valid():
             address_province = add_receive_information_form.cleaned_data.get('address_province')
             address_city = add_receive_information_form.cleaned_data.get('address_city')
@@ -191,3 +191,42 @@ def trove_or_cancel_trove_book(request, book_id):
         else:  # 收藏
             user.profile.trove_books.add(book)
     return redirect(redirect_to)
+
+
+@login_required(login_url='user:login')
+def look_user_information_page(request):
+    pass
+
+
+@login_required(login_url='user:login')
+def add_receive_information_page(request):
+    user = auth.get_user(request)
+    if request.method == 'POST':
+        receive_information_form = ReceiveInformationForm(request.POST)
+        if receive_information_form.is_valid():
+            address_province = receive_information_form.cleaned_data.get('address_province')
+            address_city = receive_information_form.cleaned_data.get('address_city')
+            address_town = receive_information_form.cleaned_data.get('address_town')
+            address_detailed = receive_information_form.cleaned_data.get('address_detail')
+            phone = receive_information_form.cleaned_data.get('phone')
+            recipient = receive_information_form.cleaned_data.get('recipient')
+            print(address_province)
+            print(address_detailed)
+
+            information_dict = {'address_province': address_province, 'address_city': address_city,
+                                'address_town': address_town, 'address_detailed': address_detailed, 'phone': phone,
+                                'recipient': recipient}
+            result = add_one_receive_information(user, information_dict)
+
+            if result.get('result', False):
+                return redirect(reverse('user:look_user_information_page'))
+            else:
+                return render(request, 'error.html', {'user': user, 'error_message': result.get('message')})
+        else:
+            return render(request, 'user/add_receive_information_page.html',
+                          {'user': user, 'receive_information_form': receive_information_form})
+    else:  # 正常访问
+        receive_information_form = ReceiveInformationForm(
+            {'phone': user.profile.phone, })
+        return render(request, 'user/add_receive_information_page.html',
+                      {'user': user, 'receive_information_form': receive_information_form, })

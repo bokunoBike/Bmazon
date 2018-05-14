@@ -108,7 +108,7 @@ class RegisterForm(forms.Form):
         return phone
 
 
-class AddReceiveInformationForm(forms.Form):
+class ReceiveInformationForm(forms.Form):
     """
     收货信息表单
     """
@@ -136,10 +136,9 @@ class AddReceiveInformationForm(forms.Form):
             "max_length": "超出长度",
         }
     )
-    address_detailed = forms.CharField(
+    address_detail = forms.CharField(
         label='详细地址',
-        max_length=9,
-        required=40,
+        max_length=40,
         error_messages={
             "required": "详细地址不能为空",
             "max_length": "超出长度",
