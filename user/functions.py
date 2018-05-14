@@ -5,6 +5,16 @@ import django.contrib.auth as auth
 from django.db.utils import IntegrityError
 
 from book.functions import get_book_by_book_id, get_book_by_user_trove
+from .models import *
+
+
+def get_receive_information_by_id(receive_information_id):
+    receive_informations = ReceiveInformation.objects.filter(receive_information_id=receive_information_id)
+    if receive_informations.exists():
+        receive_information = receive_informations[0]
+    else:
+        receive_information = None
+    return receive_information
 
 
 def register_user(request, register_form):

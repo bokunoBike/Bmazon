@@ -154,4 +154,8 @@ def sold_out_or_putaway(request, book_id):
 
 @user_passes_test(is_manager, login_url='manager:login')
 def handle_orders(request):
-    pass
+    user = auth.get_user(request)
+    page = request.GET.get('page', 1)
+    orders = get_orders_by_user(user)
+    contacts = get_books_to_page(orders, page=page)
+    return render(request, 'user/look_orders_page.html', {'user': user, 'contacts': contacts})

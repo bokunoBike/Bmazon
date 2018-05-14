@@ -10,7 +10,7 @@ from .models import *
 from .functions import *
 from book.functions import get_book_by_user_trove, get_books_to_page, get_book_by_book_id, \
     get_books_by_search_info, get_book_by_user_shopping_cart
-from order.functions import create_order, get_orders_by_user, cancel_one_order
+from order.functions import create_item, get_orders_by_user, cancel_one_order, create_order
 
 
 def login(request):  # 登录页面
@@ -100,10 +100,12 @@ def cancel_order(request):
 @login_required(login_url='user:login')
 def look_shopping_cart_page(request):
     user = auth.get_user(request)
+    add_receive_information_form = AddReceiveInformationForm
     books = get_book_by_user_shopping_cart(user)[0:20]  # 限制返回最多20个
     for book in books:
         book.price = book.origin_price * float(book.discount)
-    return render(request, 'user/look_shopping_cart_page.html', {'user': user, 'books': books})
+    return render(request, 'user/look_shopping_cart_page.html',
+                  {'user': user, 'books': books, 'add_receive_information_form': add_receive_information_form})
 
 
 @login_required(login_url='user:login')
@@ -129,20 +131,44 @@ def drop_book_from_shopping_cart(request, book_id):
 def shopping_cart_to_orders(request):
     user = auth.get_user(request)
     books = get_book_by_user_shopping_cart(user, ignore_sold_out=False)
-    fail_orders = []
-    success_orders = []
+    fail_items = []
+    success_items = []
     for book in books:
         sale_count = int(request.POST.get(str(book.book_id), '0'))
         if sale_count <= 0:
             continue
-        result = create_order(book, user, sale_count)
+        result = create_item(book, sale_count)
         if result.get('result', False):
-            success_orders.append(book)
+            success_items.append(result.get('item_id'))
         else:
-            fail_orders.append({'book': book, 'fail_message': result.get('fail_message', 'error!')})
+            fail_items.append({'book': book, 'fail_message': result.get('fail_message', 'error!')})
+
+    receive_information_id = int(request.POST.get('receive_information_id', -1))
+    if receive_information_id != -1:
+        receive_information = get_receive_information_by_id(receive_information_id)
+        address_province = receive_information.address_province
+        address_city = receive_information.address_city
+        address_town = receive_information.address_town
+        address_detailed = receive_information.address_detailed
+        phone = receive_information.phone
+        recipient = receive_information.recipient
+    else:
+        add_receive_information_form = AddReceiveInformationForm(request.POST)
+        if add_receive_information_form.is_valid():
+            address_province = add_receive_information_form.cleaned_data.get('address_province')
+            address_city = add_receive_information_form.cleaned_data.get('address_city')
+            address_town = add_receive_information_form.cleaned_data.get('address_town')
+            address_detailed = add_receive_information_form.cleaned_data.get('address_detailed')
+            phone = add_receive_information_form.cleaned_data.get('phone')
+            recipient = add_receive_information_form.cleaned_data.get('recipient')
+        else:
+            return render(request, 'error.html', {'user': user, 'error_message': '出错了'})
+    create_dict = {'address_province': address_province, 'address_city': address_city, 'address_town': address_town,
+                   'address_detailed': address_detailed, 'phone': phone, 'recipient': recipient, 'coupon': 0}
+    create_order(user, success_items, create_dict=create_dict)
 
     return render(request, 'user/purchase_result.html',
-                  {'user': user, 'success_orders': success_orders, 'fail_orders': fail_orders})
+                  {'user': user, 'success_items': success_items, 'fail_items': fail_items})
 
 
 @login_required(login_url='user:login')

@@ -110,13 +110,38 @@ class RegisterForm(forms.Form):
 
 class AddReceiveInformationForm(forms.Form):
     """
-    添加收货信息表单
+    收货信息表单
     """
-    address = forms.CharField(
-        label='收货地址',
-        max_length=40,
+    address_province = forms.CharField(
+        label='省',
+        max_length=9,
+        required=False,
         error_messages={
-            "required": "地址不能为空",
+            "max_length": "超出长度",
+        }
+    )
+    address_city = forms.CharField(
+        label='市',
+        max_length=10,
+        required=False,
+        error_messages={
+            "max_length": "超出长度",
+        }
+    )
+    address_town = forms.CharField(
+        label='区',
+        max_length=10,
+        required=False,
+        error_messages={
+            "max_length": "超出长度",
+        }
+    )
+    address_detailed = forms.CharField(
+        label='详细地址',
+        max_length=9,
+        required=40,
+        error_messages={
+            "required": "详细地址不能为空",
             "max_length": "超出长度",
         }
     )
@@ -144,7 +169,7 @@ class AddReceiveInformationForm(forms.Form):
             )
         return phone
 
-    def clean_address(self):
+    def clean_address_detailed(self):
         address = self.cleaned_data.get("address")
         # Check the format of address
         return address

@@ -11,8 +11,8 @@ from .validators import *
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    email = models.EmailField(max_length=20)
-    phone = models.CharField(max_length=16, validators=[validate_phone])
+    email = models.EmailField(null=True, max_length=20)
+    phone = models.CharField(null=True, max_length=16, validators=[validate_phone])
     shopping_cart = models.ManyToManyField("book.Book", related_name='shopping_cart')
     trove_books = models.ManyToManyField("book.Book", related_name='trove_books')
 
@@ -30,10 +30,14 @@ class Profile(models.Model):
 
 
 class ReceiveInformation(models.Model):
+    receive_information_id = models.AutoField(primary_key=True)  # 记录id，自动生成
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    address = models.CharField(max_length=40)
-    phone = models.CharField(max_length=16, validators=[validate_phone])
-    recipient = models.CharField(max_length=10)
+    address_province = models.CharField(null=True, max_length=10, default='暂无省份')
+    address_city = models.CharField(null=True, max_length=10, default='暂无城市')
+    address_town = models.CharField(null=True, max_length=10, default='暂无城区')
+    address_detailed = models.CharField(null=False, max_length=40, default='暂无详细地址')
+    phone = models.CharField(null=False, max_length=16, validators=[validate_phone])
+    recipient = models.CharField(null=False, max_length=10, default='暂无收件人')
 
     def __str__(self):
-        return str(self.profile.user.username)
+        return str(self.profile.user.username) + self.recipient
