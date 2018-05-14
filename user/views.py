@@ -10,7 +10,7 @@ from .models import *
 from .functions import *
 from book.functions import get_book_by_user_trove, get_books_to_page, get_book_by_book_id, \
     get_books_by_search_info, get_book_by_user_shopping_cart
-from order.functions import create_order, get_order_by_user
+from order.functions import create_order, get_orders_by_user, cancel_one_order
 
 
 def login(request):  # 登录页面
@@ -84,9 +84,17 @@ def look_book_detail_page(request, book_id):
 def look_orders_page(request):
     user = auth.get_user(request)
     page = request.GET.get('page', 1)
-    orders = get_order_by_user(user)
+    orders = get_orders_by_user(user)
     contacts = get_books_to_page(orders, page=page)
     return render(request, 'user/look_orders_page.html', {'user': user, 'contacts': contacts})
+
+
+@login_required(login_url='user:login')
+def cancel_order(request):
+    user = auth.get_user(request)
+    order_id = request.POST.get('order_id')
+    cancel_one_order(user, order_id)
+    return redirect(reverse('user:look_orders_page'))
 
 
 @login_required(login_url='user:login')

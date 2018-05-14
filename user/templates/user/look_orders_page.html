@@ -27,6 +27,13 @@
                     {% elif order.status == 7 %}退款通过
                     {% elif order.status == 8 %}退款驳回{% endif %}</td>
                 <td>{{ order.create_date }}</td>
+                <td>{% ifequal order.status 1 %}
+                        <form action="{% url 'user:cancel_order' %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="order_id" value="{{ order.order_id }}">
+                            <input type="submit" value="取消订单">
+                        </form>
+                    {% endifequal %}</td>
             </tr>
             </table>
         {% endfor %}

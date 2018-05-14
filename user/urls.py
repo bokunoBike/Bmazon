@@ -14,6 +14,7 @@ urlpatterns = [
     url(r'^look_book_detail_page/(\d+)', views.look_book_detail_page, name="look_book_detail_page"),
 
     url(r'^look_orders_page', views.look_orders_page, name="look_orders_page"),
+    url(r'^cancel_order', views.cancel_order, name="cancel_order"),
 
     url(r'^look_shopping_cart_page', views.look_shopping_cart_page, name="look_shopping_cart_page"),
     url(r'^add_book_to_shopping_cart/(\d+)', views.add_book_to_shopping_cart, name="add_book_to_shopping_cart"),

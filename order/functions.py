@@ -6,9 +6,14 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import Order
 
 
-def get_order_by_user(user):
+def get_orders_by_user(user):
     orders = Order.objects.filter(profile=user.profile).order_by('-order_id')
     return orders
+
+
+def get_orders_by_order_id(order_id):
+    order = Order.objects.filter(order_id=order_id)
+    return order
 
 
 def get_orders_to_page(orders, page=1):
@@ -40,3 +45,24 @@ def create_order(book, user, sale_count):
             return {'result': True}
     except Exception as e:
         return {'result': False, 'fail_message': str(e)}
+
+
+def cancel_one_order(user, order_id):
+    orders = get_orders_by_user(user)
+    if orders.filter(order_id=order_id).exists():
+        order = orders.filter(order_id=order_id)[0]
+    else:
+        order = None
+    if order is not None or user.is_staff:
+        if order.status == 1:
+            try:
+                order.status = 0
+                order.save()
+                return True
+            except Exception as e:
+                print(e)
+                return False
+        else:
+            return False
+    else:
+        return False
