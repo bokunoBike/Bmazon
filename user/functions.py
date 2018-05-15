@@ -28,7 +28,11 @@ def register_user(request, register_form):
         username = register_form.cleaned_data.get('username')
         email = register_form.cleaned_data.get('email')
         password = register_form.cleaned_data.get('password1')
+        password2 = register_form.cleaned_data.get('password2')
         phone = register_form.cleaned_data.get('phone')
+
+        if password != password2:
+            return False
 
         try:
             with transaction.atomic():
@@ -40,6 +44,32 @@ def register_user(request, register_form):
                 return True
         except IntegrityError:  # 已有该用户
             register_form.add_error('username', "已有用户名!")
+            return False
+    else:
+        return False
+
+
+def modify_user_info(user, modify_user_info_form):
+    if modify_user_info_form.is_valid():
+        email = modify_user_info_form.cleaned_data.get('email')
+        password = modify_user_info_form.cleaned_data.get('password1')
+        password2 = modify_user_info_form.cleaned_data.get('password2')
+        phone = modify_user_info_form.cleaned_data.get('phone')
+
+        if password != password2:
+            return False
+
+        try:
+            with transaction.atomic():
+                if password is not None:
+                    user.set_password(password)
+                    user.save()
+                user.profile.email = email
+                user.profile.phone = phone
+                user.profile.save()
+                return True
+        except Exception as e:  # 已有该用户
+            print(e)
             return False
     else:
         return False

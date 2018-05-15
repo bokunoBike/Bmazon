@@ -195,7 +195,28 @@ def trove_or_cancel_trove_book(request, book_id):
 
 @login_required(login_url='user:login')
 def look_user_information_page(request):
-    pass
+    user = auth.get_user(request)
+    profile = user.profile
+    receive_informations = get_receive_information_by_user(user)
+    return render(request, 'user/look_user_information_page.html',
+                  {'user': user, 'profile': profile, 'receive_informations': receive_informations})
+
+
+@login_required(login_url='user:login')
+def modify_user_information_page(request):
+    user = auth.get_user(request)
+    if request.method == 'POST':
+        modify_user_info_form = ModifyUserInfoForm(request.POST)
+        if modify_user_info(user, modify_user_info_form):
+            return render(reverse('user:look_user_information'))
+        else:
+            return render(request, 'user/modify_user_information_page.html',
+                          {'user': user, 'modify_user_info_form': modify_user_info_form})
+    else:  # 当正常访问时
+        modify_user_info_form = ModifyUserInfoForm(
+            {'phone': user.profile.phone, 'email': user.profile.email})
+        return render(request, 'user/modify_user_information_page.html',
+                      {'user': user, 'modify_user_info_form': modify_user_info_form})
 
 
 @login_required(login_url='user:login')
@@ -204,14 +225,13 @@ def add_receive_information_page(request):
     if request.method == 'POST':
         receive_information_form = ReceiveInformationForm(request.POST)
         if receive_information_form.is_valid():
+            redirect_to = request.POST.get('redirect_to', reverse('user:home'))
             address_province = receive_information_form.cleaned_data.get('address_province')
             address_city = receive_information_form.cleaned_data.get('address_city')
             address_town = receive_information_form.cleaned_data.get('address_town')
             address_detailed = receive_information_form.cleaned_data.get('address_detail')
             phone = receive_information_form.cleaned_data.get('phone')
             recipient = receive_information_form.cleaned_data.get('recipient')
-            print(address_province)
-            print(address_detailed)
 
             information_dict = {'address_province': address_province, 'address_city': address_city,
                                 'address_town': address_town, 'address_detailed': address_detailed, 'phone': phone,
@@ -219,7 +239,7 @@ def add_receive_information_page(request):
             result = add_one_receive_information(user, information_dict)
 
             if result.get('result', False):
-                return redirect(reverse('user:look_user_information_page'))
+                return redirect(redirect_to)
             else:
                 return render(request, 'error.html', {'user': user, 'error_message': result.get('message')})
         else:
@@ -228,5 +248,11 @@ def add_receive_information_page(request):
     else:  # 正常访问
         receive_information_form = ReceiveInformationForm(
             {'phone': user.profile.phone, })
+        redirect_to = request.GET.get('redirect_to', reverse('user:home'))
         return render(request, 'user/add_receive_information_page.html',
                       {'user': user, 'receive_information_form': receive_information_form, })
+
+
+@login_required(login_url='user:login')
+def delete_receive_info(request):
+    pass

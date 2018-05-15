@@ -108,6 +108,57 @@ class RegisterForm(forms.Form):
         return phone
 
 
+class ModifyUserInfoForm(forms.Form):
+    """
+    修改用户信息表单
+    """
+    password1 = forms.CharField(
+        label='密码',
+        widget=forms.PasswordInput,
+        min_length=6,
+        max_length=12,
+        required=False,
+        error_messages={
+            "min_length": "密码的长度应该在6到12个字符之间",
+            "max_length": "密码的长度应该在6到12个字符之间",
+        }
+    )
+    password2 = forms.CharField(
+        label='确认密码',
+        required=False,
+        widget=forms.PasswordInput,
+    )
+    email = forms.EmailField(
+        label='邮箱'
+    )
+    phone = forms.CharField(
+        label='手机号',
+        max_length=16,
+    )
+
+    def clean_password1(self):
+        password1 = self.cleaned_data.get("password1")
+        # Check the format of password
+        return password1
+
+    def clean_password2(self):
+        # Check the format of password
+        password1 = self.cleaned_data.get("password1")
+        password2 = self.cleaned_data.get("password2")
+        if password2 != password1:
+            raise forms.ValidationError("密码不一致！")
+        return password2
+
+    def clean_phone(self):
+        phone = self.cleaned_data.get("phone")
+        pattern = re.compile(r'^1[3578]\d{9}$')
+        if not re.match(pattern, phone):
+            raise forms.ValidationError(
+                '手机号码格式错误！',
+            )
+        return phone
+
+
 class ReceiveInformationForm(forms.Form):
     """
     收货信息表单

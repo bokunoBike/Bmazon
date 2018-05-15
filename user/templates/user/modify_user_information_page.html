@@ -1,24 +1,31 @@
 {% extends 'base.html' %}
 
-{% block titile %} 详细信息 {% endblock %}
+{% block titile %} 修改信息 {% endblock %}
 
-{% block the_titile %} 详细信息 {% endblock %}
+{% block the_titile %} 修改信息 {% endblock %}
 
 {% block content %}
-    <p>用户名：{{ user.username }}</p>
-    <p>邮箱：{{ profile.email }}</p>
-    <p>手机号：{{ profile.phone }}</p>
-    <a href="{% url 'user:modify_user_information_page' %}">修改信息</a>
+        <form action="" method="post">
+        {% csrf_token %}
+        {% for field in modify_user_info_form %}
+            <p>{{ field.label_tag }} {{ field }}{% if request.method == "POST" %}{{ field.errors.0 }}{% endif %}</p>
+        {% endfor %}
+        <input type="submit" value="修改"> <input type="reset" value="重置">
+    </form>
 
     {% if receive_informations.exists %}
         {% for receive_information in receive_informations %}
             <table>
-                <th>收货人</th><th>联系方式</th><th>地址</th>
+                <th>收货人</th><th>联系方式</th><th>地址</th><th></th>
                     <tr>
                         <td>{{ receive_information.recipient }}</td>
                         <td>{{ receive_information.phone }}</td>
                         <td>{{ receive_information.address_province }} {{ receive_information.address_city }} {{ receive_information.address_town }}
                             <br>{{ receive_information.address_detailed }}</td>
+                        <td><form action="{% url 'user:delete_receive_info' %}" method="post">
+                            <input type="hidden" name="receive_information_id" value="{{ receive_information_id }}">
+                            <input type="submit" value="删除">
+                        </form> </td>
                     </tr>
             </table>
         {% endfor %}
