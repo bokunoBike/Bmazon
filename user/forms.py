@@ -173,7 +173,7 @@ class ReceiveInformationForm(forms.Form):
     )
     address_city = forms.CharField(
         label='市',
-        max_length=10,
+        max_length=7,
         required=False,
         error_messages={
             "max_length": "超出长度",
@@ -181,7 +181,7 @@ class ReceiveInformationForm(forms.Form):
     )
     address_town = forms.CharField(
         label='区',
-        max_length=10,
+        max_length=7,
         required=False,
         error_messages={
             "max_length": "超出长度",

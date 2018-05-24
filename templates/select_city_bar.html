@@ -1,0 +1,28 @@
+    <link rel="stylesheet" href="/static/css/style.css">
+    <div>
+        <fieldset>
+            <legend>地址</legend>
+            <label for="addr-show02">
+                省：{{ receive_information_form.address_province }}{% if request.method == "POST" %}
+                    {{ receive_information_form.address_province.errors.0 }}{% endif %}
+                市：{{ receive_information_form.address_city }}{% if request.method == "POST" %}
+                    {{ receive_information_form.address_city.errors.0 }}{% endif %}
+                区：{{ receive_information_form.address_town }}{% if request.method == "POST" %}
+                    {{ receive_information_form.address_town.errors.0 }}{% endif %}
+            </label>
+            <div id="addr-choice">
+                <ul id="title-wrap">
+                    <li value="0">省份</li>
+                    <li value="1">城市</li>
+                    <li value="2">县区</li>
+                </ul>
+                <div id="show-panel">
+                    <ul id="addr-wrap">
+                    </ul>
+                </div>
+            </div>
+            <button type="button" class="btn met2">确定</button>
+        </fieldset>
+    </div>
+    <script src="/static/js/city.js"></script>
+    <script src="/static/js/selectCity.js"></script>

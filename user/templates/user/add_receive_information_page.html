@@ -8,9 +8,17 @@
     <form action="" method="post">
         {% csrf_token %}
         <input type="hidden" name="redirect_to" value="{{ redirect_to }}">
-        {% for field in receive_information_form %}
-            <p>{{ field.label_tag }} {{ field }}{% if request.method == "POST" %}{{ field.errors.0 }}{% endif %}</p>
-        {% endfor %}
+        <p>手机号：{{ receive_information_form.phone }}{% if request.method == "POST" %}
+                {{ receive_information_form.phone.errors.0 }}{% endif %}</p>
+        <p>收货人：{{ receive_information_form.recipient }}{% if request.method == "POST" %}
+                {{ receive_information_form.recipient.errors.0 }}{% endif %}</p>
+        {% include 'select_city_bar.html' %}
+        <p>详细地址：{{ receive_information_form.address_detail }}{% if request.method == "POST" %}
+                {{ receive_information_form.address_detail.errors.0 }}{% endif %}</p>
         <input type="submit" value="添加地址">
     </form>
+
+{% endblock %}
+{% block script %}
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 {% endblock %}
