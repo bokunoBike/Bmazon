@@ -253,6 +253,13 @@ def add_receive_information_page(request):
                       {'user': user, 'receive_information_form': receive_information_form, })
 
 
+@require_http_methods(["POST"])
 @login_required(login_url='user:login')
 def delete_receive_info(request):
-    pass
+    user = auth.get_user(request)
+    receive_information_id = request.POST.get('receive_information_id')
+    receive_information = get_receive_information_by_id(receive_information_id)
+    if receive_information is not None and receive_information.profile == user.profile:
+        receive_information.delete()
+    redirect_to = request.POST.get('redirect_to', reverse('user:home'))
+    return redirect(redirect_to)

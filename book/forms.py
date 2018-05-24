@@ -12,7 +12,7 @@ class AddBookForm(forms.Form):
     """
     name = forms.CharField(
         label='书名',
-        max_length=20,
+        max_length=50,
         error_messages={
             "required": "书名不能为空！",
             "max_length": "超出长度！",
@@ -20,7 +20,7 @@ class AddBookForm(forms.Form):
     )
     publisher = forms.CharField(
         label='出版社',
-        max_length=15,
+        max_length=50,
         error_messages={
             "required": "出版社名不能为空！",
             "max_length": "超出长度！",
@@ -28,7 +28,7 @@ class AddBookForm(forms.Form):
     )
     author = forms.CharField(
         label='作者',
-        max_length=30,
+        max_length=50,
         error_messages={
             "required": "作者不能为空！",
             "max_length": "超出长度！",
@@ -87,7 +87,7 @@ class ModifyBookForm(forms.Form):
     book_id = forms.HiddenInput()
     name = forms.CharField(
         label='书名',
-        max_length=30,
+        max_length=50,
         error_messages={
             "required": "书名不能为空！",
             "max_length": "超出长度！",
@@ -95,7 +95,7 @@ class ModifyBookForm(forms.Form):
     )
     publisher = forms.CharField(
         label='出版社',
-        max_length=15,
+        max_length=50,
         error_messages={
             "required": "出版社名不能为空！",
             "max_length": "超出长度！",
@@ -103,7 +103,7 @@ class ModifyBookForm(forms.Form):
     )
     author = forms.CharField(
         label='作者',
-        max_length=20,
+        max_length=50,
         error_messages={
             "required": "作者不能为空！",
             "max_length": "超出长度！",

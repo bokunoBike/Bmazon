@@ -1,27 +1,74 @@
 # -*- coding: utf-8 -*-
 
 import re
-import urlparse
+import requests
+from urllib import parse
 from bs4 import BeautifulSoup
+import json
 
 
 class HtmlParser(object):
-    def parser(self, page_url, html_cont):
+    def parser(self, asin):
         '''
-        用于解析网页内容，抽取URL和数据
-        :param page_url:下载页面的URL
+        用于解析网页内容，抽取数据
         :param html_cont:下载的页面内容
         :return:返回URL和数据
         '''
-        if page_url is None or html_cont is None:
-            return
-        # soup=BeautifulSoup(html_cont,'html.parser',from_encoding='utf-8')
-        soup = BeautifulSoup(html_cont, 'html.parser')
-        main_info = self.get_main_info(page_url, soup)
-        # new_urls=self._get_new_urls(page_url,soup)
-        new_data = self._get_new_data(page_url, soup, main_info)
-        # return main_info,new_urls,new_data
-        return main_info, None, new_data
+        user_agent = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
+        headers = {
+            'Host': 'www.amazon.cn',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:49.0) Gecko/20100101 Firefox/49.0',
+            'Accept': 'text/plain, */*; q=0.01',
+            'Accept-Language': 'zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+            'X-Requested-With': 'XMLHttpRequest',
+            'Connection': 'keep-alive',
+            'Cache-Control': 'max-age=0',
+            'Content-Length': '0',
+        }
+
+        r1 = requests.post(
+            'https://www.amazon.cn/gp/product-description/ajaxGetProuductDescription.html?ref_=dp_apl_pc_loaddesc&asin=%s&deviceType=web' % (
+                asin), headers=headers)
+        soup = BeautifulSoup(str(r1.content, 'utf-8').replace('\n', ''), 'html.parser')
+        catalogue = soup.find('div', id="s_contents", class_="s-contents").find('h3',
+                                                                                text="目录").next_sibling.next_sibling
+        catalogue = str(catalogue).replace('<p>', '\n').replace('</p>', '\n').replace('<br/>', '\n').strip()
+        catalogue = re.sub(r'<.*>', '', catalogue)
+
+        summary = soup.find('div', id="s_contents", class_="s-contents").find('h3', text="文摘").next_sibling.next_sibling
+        summary = str(summary).replace('<p>', '\n').replace('</p>', '\n').replace('<br/>', '\n').replace('<br/>', '\n').strip()
+        summary = re.sub(r'<.*>', '', summary)
+
+        postdata = {'asin': asin, 'method': 'getBookData'}
+        r2 = requests.post('https://www.amazon.cn/gp/search-inside/service-data', data=postdata)
+        data = json.loads(str(r2.content, 'utf-8').strip())
+        title = data.get('title')
+        price = data.get('buyingPrice')
+        authors = data.get('authorNameList')
+        cover_src = data.get('largeImageUrls')
+        if cover_src is not None:
+            cover_src = cover_src['1']
+        else:
+            cover_src = data.get('thumbnailImage').replace('._SL75_', '')
+
+        r3 = requests.get('https://www.amazon.cn/dp/%s' % asin, headers=headers)
+        soup = BeautifulSoup(str(r3.content, 'utf-8').replace('\n', ''), 'html.parser')
+        publisher = soup.find('div', id="detail_bullets_id").find('div', class_="content").ul.find('b', text=re.compile(
+            r'出版社')).next_sibling
+        categorys = soup.find('div', id="wayfinding-breadcrumbs_container",
+                              class_="a-section a-spacing-none a-padding-medium").find('ul',
+                                                                                       class_="a-unordered-list a-horizontal a-size-small").find_all(
+            'a', class_="a-link-normal a-color-tertiary")
+        if len(categorys) > 1:
+            category = categorys[1].text.strip()
+        else:
+            category = categorys[0].text.strip()
+
+        book_info = {'title': title, 'authors': authors, 'price': price, 'publisher': publisher, 'category': category,
+                     'cover_src': cover_src, 'catalogue': catalogue, 'summary': summary}
+        return book_info
 
     def parser_page(self, page_url, html_cont):
         '''
@@ -37,8 +84,11 @@ class HtmlParser(object):
 
     def _get_next_page(self, page_url, soup):
         new_pages = set()
-        link = soup.find('dd', class_='page').find('a', text=re.compile(u'下一页'))['href']
-        new_full_link = urlparse.urljoin(page_url, link)
+        page_bar = soup.find('div',
+                             class_="a-fixed-left-flipped-grid s-padding-left-small s-padding-right-small s-span-page a-spacing-top-small")
+
+        next_page = soup.find('a', class_="pagnNext", id="pagnNextLink", title="下一页")
+        new_full_link = parse.urljoin(page_url, next_page['href'])
         new_pages.add(new_full_link)
         return new_pages
 
@@ -50,70 +100,12 @@ class HtmlParser(object):
         :return:返回新的URL集合
         '''
         new_urls = set()
-        # 抽取符合要求的a标记
-        links = soup.find('div', class_='main').find('dl').find_all('a', href=re.compile(
-            r'(http://www.mm131.com/.*/\d+\.html)'))
-        for link in links:
+        print('crawl ' + page_url)
+        atfResults = soup.find('div', id=["atfResults", "mainResults"], class_="a-row s-result-list-parent-container")
+        lis = atfResults.find('ul').find_all('li', class_="s-result-item celwidget ")
+
+        for li in lis:
             # 提取href属性
-            new_url = link['href']
+            new_url = li['data-asin']
             new_urls.add(new_url)
-        place = soup.find('div', class_='main').find('dt', class_='public-title').find('a').find_next_sibling().text
-        current_page = soup.find('dd', class_='page').find('span', class_='page_now').text
-        print
-        place, current_page
         return new_urls
-
-    def _get_new_urls(self, page_url, soup):
-        '''
-        抽取新的URL集合
-        :param page_url:下载页面的URL
-        :param soup:soup
-        :return:返回新的URL集合
-        '''
-        new_urls = set()
-        # 抽取符合要求的a标记
-        links = soup.find('div', class_='otherlist').find('ul').find_all('a', href=re.compile(r'(\d+\.html)'))
-        for link in links:
-            # 提取href属性
-            new_url = link['href']
-            # 拼接成完整网址
-            new_full_url = urlparse.urljoin(page_url, new_url)
-            new_urls.add(new_full_url)
-        return new_urls
-
-    def _get_new_data(self, page_url, soup, main_info):
-        '''
-        抽取有效数据
-        :param page_url:下载页面的URL
-        :param soup:soup
-        :return:返回有效数据
-        '''
-        title = main_info['title']
-        total_page = main_info['total_page']
-        url_image_id = main_info['url_image_id']
-        datas = []
-        for i in range(1, int(total_page) + 1):
-            data = {}
-            alt = title + '(%d)' % i
-            data['alt'] = alt
-            img_url = 'http://img1.mm131.com/pic/%s/%d.jpg' % (url_image_id, i)
-            data['img_url'] = img_url
-            datas.append(data)
-        return datas
-
-    def get_main_info(self, page_url, soup):
-        main_info = {}
-        title = soup.find('div', class_='content').find('h5').text
-        place = soup.find('div', class_='place').find('a').find_next_sibling().text
-        total_page_str = soup.find('div', class_='content-page').find('span').text
-        total_page = re.findall(r'\d+', total_page_str)[0]
-        url_image_id = \
-            re.findall(r'http://img1.mm131.com/pic/(\d+)/1.jpg',
-                       soup.find('div', class_='content-pic').find('img')['src'])[
-                0]
-
-        main_info['title'] = title
-        main_info['place'] = place
-        main_info['total_page'] = total_page
-        main_info['url_image_id'] = url_image_id
-        return main_info

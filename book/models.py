@@ -13,10 +13,10 @@ def get_book_file_path(instance, filename):
 
 class Book(models.Model):
     book_id = models.AutoField(primary_key=True)  # id
-    name = models.CharField(max_length=20, null=False)  # 书名
+    name = models.CharField(max_length=50, null=False)  # 书名
     category = models.CharField(max_length=20, null=False)  # 书籍类别
-    publisher = models.CharField(max_length=15, null=False)  # 出版社
-    author = models.CharField(max_length=30, null=False)  # 作者
+    publisher = models.CharField(max_length=50, null=False)  # 出版社
+    author = models.CharField(max_length=50, null=False)  # 作者
     origin_price = models.FloatField(max_length=6, null=False,
                                      validators=[validate_not_negative_number])  # 书籍价格
     stock = models.IntegerField(null=False, default=0, validators=[validate_not_negative_number])  # 书籍库存

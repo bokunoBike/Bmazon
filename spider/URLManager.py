@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 
-import cPickle
+import pickle as cPickle
 import hashlib
+import copy
 
 
 class URLManager(object):
     def __init__(self):
         self.new_urls = self.load_progress('file/new_urls.txt')  # 未爬取URL集合
         self.old_urls = self.load_progress('file/old_urls.txt')  # 已爬取URL集合
+        self.error_asins = self.load_progress('file/error_asins.txt') # 出错的URL集合
         self.new_pages = None
         self.old_pages = None
 
@@ -25,7 +27,7 @@ class URLManager(object):
         """
         new_page = self.new_pages.pop()
         m = hashlib.md5()
-        m.update(new_page)
+        m.update(new_page.encode("utf8"))
         self.old_pages.add(m.hexdigest()[8:-8])
         return new_page
 
@@ -38,7 +40,7 @@ class URLManager(object):
         if page is None:
             return
         m = hashlib.md5()
-        m.update(page)
+        m.update(page.encode("utf8"))
         page_md5 = m.hexdigest()[8:-8]
         if page not in self.new_pages and page_md5 not in self.old_pages:
             self.new_pages.add(page)
@@ -81,10 +83,12 @@ class URLManager(object):
         :return:
         """
         new_url = self.new_urls.pop()
-        m = hashlib.md5()
-        m.update(new_url)
-        self.old_urls.add(m.hexdigest()[8:-8])
+        self.old_urls.add(new_url)
         return new_url
+
+    def get_error_asin(self):
+        error_asin = self.error_asins.pop()
+        return error_asin
 
     def add_new_url(self, url):
         """
@@ -94,10 +98,7 @@ class URLManager(object):
         """
         if url is None:
             return
-        m = hashlib.md5()
-        m.update(url)
-        url_md5 = m.hexdigest()[8:-8]
-        if url not in self.new_urls and url_md5 not in self.old_urls:
+        if url not in self.new_urls and url not in self.old_urls:
             self.new_urls.add(url)
 
     def add_new_urls(self, urls):
@@ -110,6 +111,19 @@ class URLManager(object):
             return
         for url in urls:
             self.add_new_url(url)
+
+    def add_error_asin(self, asin):
+        if asin is None:
+            return
+        if asin not in self.error_asins:
+            self.old_urls.pop()
+            self.error_asins.add(asin)
+
+    def add_error_asins(self, asins):
+        if asins is None or len(asins) == 0:
+            return
+        for asin in asins:
+            self.add_error_asin(asin)
 
     def new_url_size(self):
         """
@@ -141,13 +155,11 @@ class URLManager(object):
         :param path:文件路径
         :return:返回set集合
         '''
-        print
-        '[+] 从文件加载进度： %s' % path
+        print('[+] 从文件加载进度： %s' % path)
         try:
             with open(path, 'rb') as f:
                 tmp = cPickle.load(f)
                 return tmp
         except:
-            print
-            '[!] 无进度文件，创建： %s' % path
+            print('[!] 无进度文件，创建： %s' % path)
         return set()

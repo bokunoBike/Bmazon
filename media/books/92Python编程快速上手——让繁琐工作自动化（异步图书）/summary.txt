@@ -1,0 +1,15 @@
+版权页： 
+ 
+ 
+插图： 
+ 
+ 
+要读取加密的PDF，就调用decrypt（）函数，传入口令字符串。在用正确的口令调用decrypt（）后，你会看到调用getPage（）不再导致错误。如果提供了错误的口令，decrypt（）函数将返回0，并且getPage（）会继续失败。请注意，decrypt（）方法只解密了PdfFileReader对象，而不是实际的PDF文件。在程序中止后，硬盘上的文件仍然是加密的。程序下次运行时，仍然需要再次调用decrypt（）。 
+13.1.3创建PDF 
+在PyPDF2中，与PdfFileReader对象相对的是PdfFileWriter对象，它可以创建一个新的PDF文件。但PyPDF2不能将任意文本写入PDF，就像Python可以写入纯文本文件那样。PyPDF2写入PDF的能力，仅限于从其他PDF中拷贝页面、旋转页面、重叠页面和加密文件。 
+模块不允许直接编辑PDF。必须创建一个新的PDF，然后从已有的文档拷贝内容。本节的例子将遵循这种一般方式： 
+1.打开一个或多个已有的PDF（源PDF），得到PdfFileReader对象。 
+2.创建一个新的PdfFileWriter对象。 
+3.将页面从PdfFileReader对象拷贝到PdfFileWriter对象中。 
+4.最后，利用PdfFileWriter对象写入输出的PDF。 
+创建一个PdtFileWriter对象，只是在Python中创建了一个代表PDF文档的值，这并没有创建实际的PDF文件，要实际生成文件，必须调用PdfFileWriter对象的、vrite（）方法。                                 --此文字指 

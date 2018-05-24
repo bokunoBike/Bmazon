@@ -13,12 +13,17 @@
     {% if receive_informations.exists %}
         {% for receive_information in receive_informations %}
             <table>
-                <th>收货人</th><th>联系方式</th><th>地址</th>
+                <th>收货人</th><th>联系方式</th><th>地址</th><th></th>
                     <tr>
                         <td>{{ receive_information.recipient }}</td>
                         <td>{{ receive_information.phone }}</td>
                         <td>{{ receive_information.address_province }} {{ receive_information.address_city }} {{ receive_information.address_town }}
                             <br>{{ receive_information.address_detailed }}</td>
+                        <td><form action="{% url 'user:delete_receive_info' %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="redirect_to" value="{{ request.path }}">
+                                <input type="submit" value="删除">
+                            </form> </td>
                     </tr>
             </table>
         {% endfor %}
