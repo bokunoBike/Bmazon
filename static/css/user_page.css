@@ -1,0 +1,80 @@
+@CHARSET "UTF-8";
+.look_order{
+	
+}
+.order_box{
+	padding: 10px;
+	margin: 10px;
+}
+table, th, td{
+	border: 2px solid #653c2b;
+}
+table{
+    border-collapse:collapse;
+    width: 500px;
+  }
+th
+  {
+  height:60px;
+  }
+  
+.user_change{
+	font-size: 15px;
+	margin-left: 200px;
+	text-align: center;
+		 	
+}
+
+.buy_buy{
+	color: #ff0000;
+    display: inline-block;
+    margin-bottom: 0;
+    font-weight: normal;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    background-color: #f5bb9e;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    padding: 6px 12px;
+    font-size: 13px;
+    line-height: 1.42857143;
+    border-radius: 5px;
+    -webkit-user-select: none;
+  width: 80px;
+    height:32px;
+}
+.buy_buy:hover{
+    color: #fff;
+    background-color: #ff0000;
+    border-color: #ff0000;
+    text-decoration: none;
+}
+.buy_no{
+	color: #fff;
+    display: inline-block;
+    margin-bottom: 0;
+    font-weight: normal;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    background-color: #653c2b;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    padding: 6px 12px;
+    font-size: 13px;
+    line-height: 1.42857143;
+    border-radius: 5px;
+    -webkit-user-select: none;
+    width: 80px;
+    height:32px;
+}
+.buy_no{
+    color: #fff;
+    background-color: #8B4513;
+    border-color: #8B4513;
+    text-decoration: none;
+}
+.buy_yes{
+	margin:20px;
+}

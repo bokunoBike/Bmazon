@@ -23,6 +23,11 @@ def get_receive_information_by_user(user):
     return receive_informations
 
 
+def get_item_by_order(order):
+    items = order.items.all()
+    return items
+
+
 def register_user(request, register_form):
     if register_form.is_valid():
         username = register_form.cleaned_data.get('username')
@@ -32,6 +37,7 @@ def register_user(request, register_form):
         phone = register_form.cleaned_data.get('phone')
 
         if password != password2:
+            register_form.add_error('password2', "密码不一致!")
             return False
 
         try:
@@ -46,6 +52,7 @@ def register_user(request, register_form):
             register_form.add_error('username', "已有用户名!")
             return False
     else:
+        print("表单错误")
         return False
 
 
@@ -61,7 +68,8 @@ def modify_user_info(user, modify_user_info_form):
 
         try:
             with transaction.atomic():
-                if password is not None:
+                if password is not None and password != '':
+                    print('修改密码 ' + password)
                     user.set_password(password)
                     user.save()
                 user.profile.email = email

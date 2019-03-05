@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect, reverse
 import django.contrib.auth as auth
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.views.decorators.http import require_http_methods
 
 from .forms import *
 from .functions import *
-from order.functions import get_orders_by_user
+from order.functions import get_orders_all, get_orders_by_order_id
 from book.forms import AddBookForm, ModifyBookForm
 from book.functions import add_one_book, modify_book, get_book_by_book_id, get_books_by_search_info, get_books_to_page
 
@@ -20,6 +21,8 @@ def login(request):  # 登录页面
             if user is not None and user.is_staff:  # 登录成功
                 auth.login(request, user)
                 redirect_to = request.POST.get('redirect_to', reverse('manager:home'))
+                if redirect_to is None or redirect_to == '':
+                    redirect_to = reverse('manager:home')
                 return redirect(redirect_to)
             else:
                 return render(request, 'manager/login.html', {'login_form': login_form})
@@ -28,12 +31,14 @@ def login(request):  # 登录页面
     else:  # 正常访问
         login_form = LoginForm
         redirect_to = request.GET.get('redirect_to', reverse('manager:home'))
+        if redirect_to is None or redirect_to == '':
+            redirect_to = reverse('manager:home')
         return render(request, 'manager/login.html', {'login_form': login_form, 'redirect_to': redirect_to})
 
 
 def logout(request):
     auth.logout(request)  # 注销用户
-    return redirect(reverse('manager:home'))
+    return redirect(reverse('user:home'))
 
 
 @user_passes_test(is_manager, login_url='manager:login')
@@ -144,6 +149,8 @@ def modify_book_page(request, book_id):
 @user_passes_test(is_manager, login_url='manager:login')
 def sold_out_or_putaway(request, book_id):
     redirect_to = request.GET.get('redirect_to')
+    if redirect_to is None or redirect_to == '':
+        redirect_to = reverse('manager:home')
     book = get_book_by_book_id(book_id)
     if book.is_on_sale:
         book.is_on_sale = False  # 下架
@@ -154,9 +161,24 @@ def sold_out_or_putaway(request, book_id):
 
 
 @user_passes_test(is_manager, login_url='manager:login')
-def handle_orders(request):
+def look_orders_page(request):
     user = auth.get_user(request)
     page = request.GET.get('page', 1)
-    orders = get_orders_by_user(user)
+    orders = get_orders_all()
+
     contacts = get_books_to_page(orders, page=page)
-    return render(request, 'user/look_orders_page.html', {'user': user, 'contacts': contacts})
+    return render(request, 'manager/look_orders_page.html', {'user': user, 'contacts': contacts})
+
+
+@require_http_methods(["POST"])
+@user_passes_test(is_manager, login_url='manager:login')
+def handle_order(request):
+    redirect_to = request.GET.get('redirect_to')
+    if redirect_to is None or redirect_to == '':
+        redirect_to = reverse('manager:look_orders_page')
+    order_id = request.POST.get('order_id')
+    to_status = int(request.POST.get('to_status'))
+    order = get_orders_by_order_id(order_id)
+    order.status = to_status
+    order.save()
+    return redirect(redirect_to)

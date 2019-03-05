@@ -1,38 +1,43 @@
 {% extends 'base.html' %}
 
 {% block titile %} {{ book.name }} {% endblock %}
-
-{% block the_titile %} {{ book.name }} {% endblock %}
+    {% block add_head_link %}
+	    <link rel="stylesheet" type="text/css" href="/static/css/book_details.css" />
+        <link rel="stylesheet" type="text/css" href="/static/css/user_index.css" />
+    {% endblock %}
 
 {% block content %}
-    <p>书名：{{ book.name }}</p>
-    <p>作者：{{ book.author }}</p>
-    <p>出版社：{{ book.publisher }}</p>
-    <p>价格：{{ book.origin_price }}</p>
-    <p>折扣：{{ book.discount }}</p>
-    <p>库存：{{ book.stock }}</p>
-    <p>销量：{{ book.sale_number }}</p>
-    <p>封面：<br><img src="/media/{{ book.bookdetail.cover }}"></p>
-    <p>目录：<br>
-    <div id="catalogue_text_display" name="catalogue"></div></p>
-    <p>摘要：<br>
-    <div id="summary_text_display" name="summary"></div></p>
-    <br><br>
+    <div class="left_content">
+        <div class="feat_prod_box" style="width: 850px;">
+            <div class="prod_img"><img src="/media/{{ book.bookdetail.cover }}" alt="" title="" border="0" width=250ps height=330ps /></div>
+            <div class="prod_title"><font size="3">{{ book.name }}</font></div><br>
+            原价:<del><span class="book_inf">{{ book.origin_price }}元<br></span></del><div class="wspace"></div>
+            现价：<span class="book_price">{{ book.price }}元</span><br><div class="wspace"></div>
+            作者：<span class="book_inf">{{ book.author }}</span><br><div class="wspace"></div>
+            出版社：<span class="book_inf">{{ book.publisher }}</span><br><div class="wspace"></div>
+            分类：<span class="book_inf">{{ book.category }}</span><br><div class="wspace"></div>
+            销量：<span class="book_inf">{{ book.sale_number }}</span>&nbsp;&nbsp;
+            库存：<span class="book_inf">{{ book.stock }}</span><br><div class="wspace"></div>
 
-    <a href="{% url 'user:trove_or_cancel_trove_book' book.book_id %}?redirect_to={{ request.path }}">
-        {% if has_reserved %}取消收藏{% else %}收藏{% endif %}</a>
-    <a href="{% url 'user:add_book_to_shopping_cart' book.book_id %}">添加到购物车</a>
+            <a class="buy" style="width: 74px; padding: 0px; height: 30px;" href="{% url 'user:trove_or_cancel_trove_book' book.book_id %}?redirect_to={{ request.path }}">
+                {% if has_reserved %}取消收藏{% else %}收藏{% endif %}</a>
+            <a class="buy" style="padding: 0px; height: 30px; width: 100px;" href="{% url 'user:add_book_to_shopping_cart' book.book_id %}">添加到购物车</a>
+
+            <div class="wspace"></div>
+            <p>目录：<br>
+            <div id="catalogue_text_display" name="catalogue"></div></p>
+            <p>摘要：<br>
+            <div id="summary_text_display" name="summary"></div></p>
+            <br><br>
+        </div>
+    </div>
 {% endblock %}
 
 {% block script %}
     <style type="text/css">
-        div {
-            border-radius: 5px;
-            border: 1px solidred;
-            padding: 10px;
-        }
-
         #catalogue_text_display {
+            border: 1px;
+            padding: 10px;
             min-height: 250px;
             overflow-y: auto;
             max-height: 300px;
@@ -40,13 +45,9 @@
         }
     </style>
     <style type="text/css">
-        div {
-            border-radius: 5px;
-            border: 1px solidred;
-            padding: 10px;
-        }
-
         #summary_text_display {
+            border: 1px;
+            padding: 10px;
             min-height: 250px;
             overflow-y: auto;
             max-height: 300px;

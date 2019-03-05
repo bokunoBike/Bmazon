@@ -1,4 +1,3 @@
-//****************针对第二种方式的具体js实现部分******************//
 //****************所使用的数据是city.js******************//
 /*根据id获取对象*/
 function $(str) {
@@ -10,7 +9,6 @@ var addrWrap = $('addr-wrap');   //省市区显示模块
 var address_province = $('id_address_province');
 var address_city = $('id_address_city');
 var address_town = $('id_address_town');
-var btn2 = document.getElementsByClassName('met2')[0];  //确定按钮
 
 var current2 = {
     prov: '',
@@ -26,7 +24,6 @@ window.onload = showProv2();
 
 function showProv2() {
     addrWrap.innerHTML = '';
-    btn2.disabled = true;
     titleWrap[0].className = 'titleSel';
     var len = provice.length;
     for (var i = 0; i < len; i++) {
@@ -79,6 +76,8 @@ function showCity2(index) {
         cityLi.index = j;
         addrWrap.appendChild(cityLi);
     }
+    //将选中的省份填到输入框中
+    address_province.value = current2.provVal;
 }
 
 /*选择城市之后显示该城市下所有县区*/
@@ -100,23 +99,19 @@ function showCountry2(index) {
         cityLi.index = k;
         addrWrap.appendChild(cityLi);
     }
+    //将选中的城市填到输入框中
+    address_city.value = current2.cityVal;
 }
 
 /*选中具体的县区*/
 function selectCountry(index) {
-    btn2.disabled = false;
     current2.country = index;
-    addrWrap.getElementsByTagName('li')[index].style.backgroundColor = '#23B7E5';
+    // addrWrap.getElementsByTagName('li')[index].style.backgroundColor = '#23B7E5';
     current2.countryVal = provice[current2.prov].city[current2.city].districtAndCounty[index];
+    //将选中的县区填到输入框中
+    address_town.value = current2.countryVal;
 }
 
-/*点击确定后恢复成初始状态，且将所选地点显示在输入框中*/
-btn2.onclick = function () {
-    address_province.value = current2.provVal;
-    address_city.value = current2.cityVal;
-    address_town.value = current2.countryVal;
-    addrWrap.getElementsByTagName('li')[current2.country].style.backgroundColor = '';
-};
 
 /*分别点击省市区标题的处理函数*/
 document.getElementById('title-wrap').onclick = function (e) {

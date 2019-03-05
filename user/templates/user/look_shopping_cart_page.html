@@ -23,6 +23,15 @@
                     </tr>
                 {% endfor %}
             </table>
+            {% for receive_information in receive_informations %}
+                <p><input type="radio" name="receive_information_id" value="{{ receive_information.receive_information_id }}"/>
+                    收件人：{{ receive_information.recipient }}<br/>
+                    手机号：{{ receive_information.phone }}<br/>
+                    地址：{{ receive_information.address_province }} {{ receive_information.address_city }} {{ receive_information.address_town }}<br/>
+                    详细地址：{{ receive_information.address_detailed }}
+                </p>
+            {% endfor %}
+            <a href="{% url 'user:add_receive_information_page' %}?redirect_to={{ request.path }}"> 添加收货信息 </a>
             <input type="submit" value="提交">
         </form>
     {% else %}

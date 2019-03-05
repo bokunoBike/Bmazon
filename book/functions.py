@@ -18,6 +18,8 @@ def get_book_by_book_id(book_id):
 
 
 def get_book_by_user_trove(user, ignore_sold_out=False):
+    if user.is_anonymous():
+        return []
     books = user.profile.trove_books.all()
     if ignore_sold_out:
         books = books.filter(is_on_sale=True)
@@ -50,7 +52,7 @@ def get_books_by_search_info(keyword="", order_by="-sale_number", ignore_sold_ou
 
 
 def get_books_to_page(books, page=1):
-    paginator = Paginator(books, 10)
+    paginator = Paginator(books, 6)
     try:
         contacts = paginator.page(page)
     except PageNotAnInteger:

@@ -1,18 +1,16 @@
 from django.shortcuts import render, redirect, reverse
-import django.contrib.auth as auth
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.http import HttpResponseRedirect
-from django import forms
 from django.views.decorators.http import require_http_methods
+import urllib.parse
 
 from .forms import *
-from .models import *
 from .functions import *
 from book.functions import get_book_by_user_trove, get_books_to_page, get_book_by_book_id, \
     get_books_by_search_info, get_book_by_user_shopping_cart
 from order.functions import create_item, get_orders_by_user, cancel_one_order, create_order
 
 
+# 登录页面
 def login(request):  # 登录页面
     if request.method == 'POST':
         login_form = LoginForm(request.POST)
@@ -21,52 +19,67 @@ def login(request):  # 登录页面
             password = login_form.cleaned_data.get('password')
 
             user = auth.authenticate(request, username=username, password=password)
+            print("尝试登录")
             if user is not None:  # 登录成功
                 auth.login(request, user)
                 redirect_to = request.POST.get('redirect_to', reverse('user:home'))
+                if redirect_to is None or redirect_to == '':
+                    redirect_to = reverse('user:home')
                 # print(redirect_to)
                 return redirect(redirect_to)
-            else:
-                return render(request, 'user/login.html', {'login_form': login_form})
+            else:  # 登录失败
+                return render(request, 'user/login.html', {'login_form': login_form, 'error_info': "用户名或密码错误！"})
         else:
             return render(request, 'user/login.html', {'login_form': login_form})
     else:  # 正常访问
         login_form = LoginForm
         redirect_to = request.GET.get('redirect_to', reverse('user:home'))
+        if redirect_to is None or redirect_to == '':
+            redirect_to = reverse('user:home')
         return render(request, 'user/login.html', {'login_form': login_form, 'redirect_to': redirect_to})
 
 
+# 注册
 def register(request):  # 注册页面
     if request.method == 'POST':
         register_form = RegisterForm(request.POST)
-        if register_user(request, register_form):
+        if register_user(request, register_form):  # 注册成功
+            print("注册成功")
             return render(request, 'user/home.html')
-        else:
+        else:  # 注册失败
+            print("注册失败")
             return render(request, 'user/register.html', {'register_form': register_form})
     else:  # 当正常访问时
         register_form = RegisterForm
         return render(request, 'user/register.html', {'register_form': register_form})
 
 
+# 登出
 def logout(request):
     auth.logout(request)  # 注销用户
     return redirect(reverse('user:home'))
 
 
+# 主页
 def home(request):
     user = auth.get_user(request)
     page = request.GET.get('page', 1)
     if request.method == 'POST':
         search_info = request.POST.get('search_info', "")
         books = get_books_by_search_info(search_info, ignore_sold_out=True)
-        contacts = get_books_to_page(books, page=page)
-        return render(request, 'user/home.html',
-                      {'user': user, 'contacts': contacts, })
     else:  # 正常访问
-        books = get_books_by_search_info(ignore_sold_out=True)
-        contacts = get_books_to_page(books, page=page)
-        return render(request, 'user/home.html',
-                      {'user': user, 'contacts': contacts, })
+        search_info = request.GET.get("search_info", "")
+        if search_info == "":
+            books = get_books_by_search_info(ignore_sold_out=True)
+        else:
+            search_info = urllib.parse.unquote(search_info)
+            books = get_books_by_search_info(search_info, ignore_sold_out=True)
+
+    contacts = get_books_to_page(books, page=page)
+    contacts.page_max_limit = contacts.number + 5
+    contacts.page_min_limit = contacts.number - 5
+    return render(request, 'user/home.html',
+                  {'user': user, 'contacts': contacts})
 
 
 def look_book_detail_page(request, book_id):
@@ -75,6 +88,7 @@ def look_book_detail_page(request, book_id):
     if book is None:
         return render(request, 'error.html', {'user': user, 'error_message': '暂无此书籍'})
     else:
+        book.price = float('%.2f' % (float(book.discount) * book.origin_price))
         has_reserved = has_reserved_book(user, book.book_id)
         return render(request, 'user/look_book_detail_page.html',
                       {'user': user, 'book': book, 'has_reserved': has_reserved})
@@ -85,6 +99,7 @@ def look_orders_page(request):
     user = auth.get_user(request)
     page = request.GET.get('page', 1)
     orders = get_orders_by_user(user)
+
     contacts = get_books_to_page(orders, page=page)
     return render(request, 'user/look_orders_page.html', {'user': user, 'contacts': contacts})
 
@@ -100,12 +115,13 @@ def cancel_order(request):
 @login_required(login_url='user:login')
 def look_shopping_cart_page(request):
     user = auth.get_user(request)
-    add_receive_information_form = ReceiveInformationForm
+
     books = get_book_by_user_shopping_cart(user)[0:20]  # 限制返回最多20个
     for book in books:
-        book.price = book.origin_price * float(book.discount)
+        book.price = round(book.origin_price * float(book.discount), 2)
+    receive_informations = get_receive_information_by_user(user)
     return render(request, 'user/look_shopping_cart_page.html',
-                  {'user': user, 'books': books, 'add_receive_information_form': add_receive_information_form})
+                  {'user': user, 'books': books, 'receive_informations': receive_informations})
 
 
 @login_required(login_url='user:login')
@@ -139,7 +155,7 @@ def shopping_cart_to_orders(request):
             continue
         result = create_item(book, sale_count)
         if result.get('result', False):
-            success_items.append(result.get('item_id'))
+            success_items.append({'book': book})
         else:
             fail_items.append({'book': book, 'fail_message': result.get('fail_message', 'error!')})
 
@@ -152,21 +168,14 @@ def shopping_cart_to_orders(request):
         address_detailed = receive_information.address_detailed
         phone = receive_information.phone
         recipient = receive_information.recipient
-    else:
-        add_receive_information_form = ReceiveInformationForm(request.POST)
-        if add_receive_information_form.is_valid():
-            address_province = add_receive_information_form.cleaned_data.get('address_province')
-            address_city = add_receive_information_form.cleaned_data.get('address_city')
-            address_town = add_receive_information_form.cleaned_data.get('address_town')
-            address_detailed = add_receive_information_form.cleaned_data.get('address_detailed')
-            phone = add_receive_information_form.cleaned_data.get('phone')
-            recipient = add_receive_information_form.cleaned_data.get('recipient')
-        else:
-            return render(request, 'error.html', {'user': user, 'error_message': '出错了'})
-    create_dict = {'address_province': address_province, 'address_city': address_city, 'address_town': address_town,
+
+    create_dict = {'profile': user.profile, 'address_province': address_province, 'address_city': address_city,
+                   'address_town': address_town,
                    'address_detailed': address_detailed, 'phone': phone, 'recipient': recipient, 'coupon': 0}
     create_order(user, success_items, create_dict=create_dict)
 
+    # print(success_items)
+    # print(fail_items)
     return render(request, 'user/purchase_result.html',
                   {'user': user, 'success_items': success_items, 'fail_items': fail_items})
 
@@ -184,6 +193,8 @@ def look_trove_page(request):
 def trove_or_cancel_trove_book(request, book_id):
     user = auth.get_user(request)
     redirect_to = request.GET.get('redirect_to')
+    if redirect_to is None or redirect_to == '':
+        redirect_to = reverse('user:home')
     book = get_book_by_book_id(book_id)
     if book is not None:
         if has_reserved_book(user, book_id):  # 取消收藏
@@ -208,24 +219,30 @@ def modify_user_information_page(request):
     if request.method == 'POST':
         modify_user_info_form = ModifyUserInfoForm(request.POST)
         if modify_user_info(user, modify_user_info_form):
-            return render(reverse('user:look_user_information'))
+            return redirect(reverse('user:look_user_information_page'))
         else:
+            receive_informations = get_receive_information_by_user(user)
             return render(request, 'user/modify_user_information_page.html',
-                          {'user': user, 'modify_user_info_form': modify_user_info_form})
+                          {'user': user, 'modify_user_info_form': modify_user_info_form,
+                           'receive_informations': receive_informations})
     else:  # 当正常访问时
         modify_user_info_form = ModifyUserInfoForm(
             {'phone': user.profile.phone, 'email': user.profile.email})
+        receive_informations = get_receive_information_by_user(user)
         return render(request, 'user/modify_user_information_page.html',
-                      {'user': user, 'modify_user_info_form': modify_user_info_form})
+                      {'user': user, 'modify_user_info_form': modify_user_info_form,
+                       'receive_informations': receive_informations})
 
 
 @login_required(login_url='user:login')
 def add_receive_information_page(request):
     user = auth.get_user(request)
+    redirect_to = request.GET.get('redirect_to', reverse('user:home'))
+    if redirect_to is None or redirect_to == '':
+        redirect_to = reverse('user:home')
     if request.method == 'POST':
         receive_information_form = ReceiveInformationForm(request.POST)
         if receive_information_form.is_valid():
-            redirect_to = request.POST.get('redirect_to', reverse('user:home'))
             address_province = receive_information_form.cleaned_data.get('address_province')
             address_city = receive_information_form.cleaned_data.get('address_city')
             address_town = receive_information_form.cleaned_data.get('address_town')
@@ -248,7 +265,6 @@ def add_receive_information_page(request):
     else:  # 正常访问
         receive_information_form = ReceiveInformationForm(
             {'phone': user.profile.phone, })
-        redirect_to = request.GET.get('redirect_to', reverse('user:home'))
         return render(request, 'user/add_receive_information_page.html',
                       {'user': user, 'receive_information_form': receive_information_form, })
 
@@ -262,4 +278,6 @@ def delete_receive_info(request):
     if receive_information is not None and receive_information.profile == user.profile:
         receive_information.delete()
     redirect_to = request.POST.get('redirect_to', reverse('user:home'))
+    if redirect_to is None or '':
+        redirect_to = reverse('user:home')
     return redirect(redirect_to)

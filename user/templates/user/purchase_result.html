@@ -5,9 +5,9 @@
 {% block the_titile %} 购买结果 {% endblock %}
 
 {% block content %}
-    {% for book in success_items %}
+    {% for success_item in success_items %}
         <br>
-        购买<a href={% url 'user:look_book_detail_page' book.book_id %}> {{ book.name }}</a>成功！请及时付款~
+        购买<a href={% url 'user:look_book_detail_page' success_item.book.book_id %}> {{ success_item.book.name }}</a>成功！请及时付款~
     {% endfor %}
 
     {% for fail_item in fail_items %}

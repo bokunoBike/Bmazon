@@ -1,0 +1,37 @@
+@CHARSET "UTF-8";
+.buy {
+    color: #ff0000;
+    display: inline-block;
+    margin-bottom: 0;
+    font-weight: normal;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    background-color: #f5bb9e;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    padding: 6px 12px;
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 1.42857143;
+    border-radius: 5px;
+    -webkit-user-select: none;
+    width: 90px;
+    height: 45px;
+}
+
+.buy:hover {
+    color: #fff;
+    background-color: #ff0000;
+    border-color: #ff0000;
+    text-decoration: none;
+}
+
+.book_det {
+    float: left;
+    margin-left: -250px;
+}
+
+.wspace {
+    padding: 10px;
+}

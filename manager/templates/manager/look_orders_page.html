@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block titile %} 我的订单 {% endblock %}
+    {% block add_head_link %}
+	    <link rel="stylesheet" type="text/css" href="/static/css/book_details.css" />
+        <link rel="stylesheet" type="text/css" href="/static/css/lookorder.css" />
+    {% endblock %}
+
+{% block the_titile %} 我的订单 {% endblock %}
+
+{% block content %}
+    <div class="order_box">
+        {% if contacts.object_list.exists %}
+            {% for order in contacts.object_list %}
+                <table border="1">
+                <th>订单号</th> <th>总价</th> <th>时间</th> <th>状态</th> <th>操作</th> <th>书籍</th> <th>作者</th> <th>出版社</th> <th>数量</th><th>单价</th>
+                <tr>
+                    <td width=3% rowspan="{{ order.items.count }}">{{ order.order_id }}</td>
+                    <td width=5% rowspan="{{ order.items.count }}">{{ order.total_fees }}</td>
+                    <td width=14% rowspan="{{ order.items.count }}">{{ order.create_date }}</td>
+                    <td width=7% rowspan="{{ order.items.count }}">
+                        {% if order.status == 0 %}已取消
+                        {% elif order.status == 1 %}待付款
+                        {% elif order.status == 2 %}待处理
+                        {% elif order.status == 3 %}待发货
+                        {% elif order.status == 4 %}已收货
+                        {% elif order.status == 5 %}已过期
+                        {% elif order.status == 6 %}申请退款
+                        {% elif order.status == 7 %}退款通过
+                        {% elif order.status == 8 %}退款驳回{% endif %}</td>
+                    <td width=5% rowspan="{{ order.items.count }}">
+                        {% if order.status == 1 %}
+                            <form action="{% url 'manager:handle_order' %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="order_id" value="{{ order.order_id }}">
+                                <input type="hidden" name="to_status" value="0">
+                                <input type="submit" value="取消订单">
+                            </form>
+                        {% elif order.status == 2 %}
+                            <form action="{% url 'manager:handle_order' %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="order_id" value="{{ order.order_id }}">
+                                <input type="hidden" name="to_status" value="2">
+                                <input type="submit" value="发货">
+                            </form>
+                        {% elif order.status == 6 %}
+                            <form action="{% url 'manager:handle_order' %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="order_id" value="{{ order.order_id }}">
+                                <input type="hidden" name="to_status" value="7">
+                                <input type="submit" value="退款申请通过">
+                            </form>
+                            <form action="{% url 'manager:handle_order' %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="order_id" value="{{ order.order_id }}">
+                                <input type="hidden" name="to_status" value="8">
+                                <input type="submit" value="退款申请驳回">
+                            </form>
+                        {% endif %}
+                    </td>
+                    {% for item in order.items.all %}
+                        <td width=20%><a href={% url 'manager:look_book_detail_page' item.book.book_id %}> {{ item.book.name }}</a></td>
+                        <td width=18%>{{ item.book.author }}</td>
+                        <td width=18%>{{ item.book.publisher }}</td>
+                        <td width=5%>{{ item.sale_count }}</td>
+                        <td width=5%>{{ item.price }}
+                        </tr>
+                    {% endfor %}
+
+                <th>申请者</th> <th>收货人</th> <th>省份</th> <th>城市</th> <th>县区</th> <th>详细地址</th> <th>手机号</th>
+                <tr>
+                    <td rowspan="{{ order.items.count }}">{{ order.profile.user }}</td>
+                    <td rowspan="{{ order.items.count }}">{{ order.recipient }}</td>
+                    <td rowspan="{{ order.items.count }}">{{ order.address_province }}</td>
+                    <td rowspan="{{ order.items.count }}">{{ order.address_city }}</td>
+                    <td rowspan="{{ order.items.count }}">{{ order.address_town }}</td>
+                    <td rowspan="{{ order.items.count }}">{{ order.address_detailed }}</td>
+                    <td rowspan="{{ order.items.count }}">{{ order.phone }}</td>
+                </tr>
+                </table>
+                <br>
+            {% endfor %}
+        {% endif %}
+        {% include 'page_bar_template.html' %}
+    </div>
+{% endblock %}

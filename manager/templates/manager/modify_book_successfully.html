@@ -1,9 +1,15 @@
 {% extends 'base.html' %}
 
 {% block titile %} 修改书籍信息成功 {% endblock %}
+    {% block add_head_link %}
+	    <link rel="stylesheet" type="text/css" href="/static/css/all_return.css" />
+    {% endblock %}
 
 {% block the_titile %} 修改书籍信息成功! {% endblock %}
 
 {% block content %}
-    修改书籍信息成功！ <a href={% url 'manager:look_book_detail_page' book_id %}>查看</a>
+    <div class="all_return">
+        修改书籍信息成功！
+        <div class="font_style"><a href={% url 'manager:look_book_detail_page' book_id %}>查看</a></div>
+    </div>
 {% endblock %}

@@ -1,0 +1,74 @@
+@CHARSET "UTF-8";
+a{
+	text-decoration:none
+}
+
+a:hover{
+	color: white;
+	text-decoration:none
+}
+a:visited {
+	text-decoration:none
+}
+.book_div{
+	background-image:url(../imgs/book_bg1.jpg);
+	height:211px;
+}
+.inf_div{
+	position: relatiwe;
+	width:50%;
+	float: right;
+}
+.book_inf{
+	font-size: 15px;
+	color: #800000;
+	height: 20px;
+}
+.return_btn{
+	color: #fff;
+    display: inline-block;
+    margin-bottom: 0;
+    margin-left: 10px;'
+    font-weight: normal;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    background-color: #653c2b;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    padding: 6px 12px;
+    font-size: 13px;
+    line-height: 1.42857143;
+    border-radius: 5px;
+    -webkit-user-select: none;
+    width: 35px;
+    height:20px;
+}
+.return_btn:hover{
+    color: #fff;
+    background-color: #8B4513;
+    border-color: #8B4513;
+    text-decoration: none;
+}
+.page_number{
+	font-size: 15px;
+}
+
+.page_other{
+	font-size: 15px;
+	color:  #8B4513;
+	margin: 10px;
+}
+.book_price{
+	font-size: 20px;
+	color: #ff0000;
+	
+}
+.page_div{
+	text-align:center;
+}
+.null{
+	height: 2px;
+}
+
+

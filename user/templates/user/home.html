@@ -1,13 +1,32 @@
 {% extends 'base.html' %}
 
 {% block titile %} 主页 {% endblock %}
-
-{% block the_titile %} Bmazon {% endblock %}
+    {% block add_head_link %}
+        <link rel="stylesheet" type="text/css" href="/static/css/user_index.css" />
+    {% endblock %}
 
 {% block content %}
-    {% for book in contacts.object_list %}
-        <a href={% url 'user:look_book_detail_page' book.book_id %}> {{ book.name }}</a>
-        <br>
-    {% endfor %}
-    {% include 'page_bar_template.html' %}
+    <div class="left_content">
+        <div class="title"><span class="title_icon"></span>热门书籍</div>
+        {% for book in contacts.object_list %}
+            <div class="feat_prod_box book_div">
+                <div class="prod_img"><img src="/media/{{ book.bookdetail.cover }}" alt="" title="" border="0" width=150ps height=200ps /></div>
+                <div class="inf_div">
+                    <div class="prod_title"><font size="3"><a href={% url 'user:look_book_detail_page' book.book_id %}> {{ book.name }}</a></font></div><br>
+                    价格：<span class="book_price">{{ book.origin_price }}</span><br>
+                    <div class="null"></div>
+                    作者：<span class="book_inf">{{ book.author }}</span><br>
+                    <div class="null"></div>
+                    分类：<span class="book_inf">{{ book.category }}</span><br>
+                    <div class="null"></div>
+                    销量：<span class="book_inf">{{ book.sale_number }}</span><br>
+                    <div class="null"></div>
+                    库存：<span class="book_inf">{{ book.stock }}<br></span>
+                    <br>
+                </div>
+            </div>
+            <div class="clear"></div>
+        {% endfor %}
+        {% include 'page_bar_template.html' %}
+    </div>
 {% endblock %}

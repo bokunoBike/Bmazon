@@ -1,20 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>用户登录</title>
-</head>
-<body>
-    <h1>这是登录页面</h1>
-    <hr />
-    <form action="{% url 'user:login' %}" method="post">
-        {% csrf_token %}
-        <input type="hidden" name="redirect_to" value="{{ redirect_to }}">
-        {% for field in login_form %}
-            <p>{{ field.label_tag }} {{ field }}{% if request.method == "POST" %}{{ field.errors.0 }}{% endif %}</p>
-        {% endfor %}
-        <input type="submit" value="登录">
-    </form>
-    还没有账号？<a href={% url 'user:register' %}>立即注册</a>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block titile %} 用户登录 {% endblock %}
+    {% block add_head_link %}
+        <link rel="stylesheet" type="text/css" href="/static/css/login.css" />
+    {% endblock %}
+
+{% block content %}
+    <div class="center_content">
+        <div class="signin">
+            <div class="box">
+                <div class="title-login">请登录</div>
+                    <!--登录表单-->
+                    <form action="{% url 'user:login' %}" method="post" class="signin-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="redirect_to" value="{{ redirect_to }}">
+
+                        {{ login_form.username }}{% if request.method == "POST" %}{{ login_form.username.errors.0 }}{% endif %}
+
+                        <div class="" style="margin: 20px 0;">
+                            {{ login_form.password }}{% if request.method == "POST" %}{{ login_form.password.errors.0 }}{% endif %}
+                        </div>
+
+                        {{ error_info }}
+
+                        <div class="save-div">
+			                <a class="forget-pass" href={% url 'user:register' %}>忘记密码</a>
+			            </div>
+
+                        <input type="submit" class="btn btn-primary btn-submit"   value="登&nbsp;&nbsp;录">
+
+                        <span class="signup">还没有账户，<a class="signup-a" href={% url 'user:register' %}>立即注册</a></span>
+						<input type="hidden" name="operator" value="login">
+                    </form>
+            </div>
+        </div>
+        <div class="clear"></div>
+    </div>
+    <div class="footer"></div>
+{% endblock %}

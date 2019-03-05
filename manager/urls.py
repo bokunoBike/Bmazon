@@ -13,5 +13,6 @@ urlpatterns = [
     url(r'^add_book_page', views.add_book_page, name="add_book_page"),
     url(r'^modify_book_page/(\d+)', views.modify_book_page, name="modify_book_page"),
     url(r'^sold_out_or_putaway/(\d+)', views.sold_out_or_putaway, name="sold_out_or_putaway"),
-    url(r'^handle_orders', views.handle_orders, name="handle_orders"),
+    url(r'^look_orders_page', views.look_orders_page, name="look_orders_page"),
+    url(r'^handle_order', views.handle_order, name="handle_order"),
 ]

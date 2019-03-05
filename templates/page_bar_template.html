@@ -1,8 +1,20 @@
-    <br>
+<div class="page_div">
     {% if contacts.has_previous %}
-        <a href="?page={{ contacts.previous_page_number }}">previous</a>
+        <span><a class="page_number" href="?page={{ contacts.previous_page_number }}">上一页</a></span>
     {% endif %}
-    Page{{ contacts.number }} of {{ contacts.paginator.num_pages }}
+
+    {% for pg in contacts.paginator.page_range%}
+        {% if pg < contacts.page_max_limit  and pg > contacts.page_min_limit %}
+            {% if pg == contacts.number %}
+                <span>{{ pg }}</span>
+            {% else %}
+                <span><a class=page_number href="?page={{ pg }}">{{ pg }}</a> </span>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+
     {% if contacts.has_next %}
-        <a href="?page={{ contacts.next_page_number }}">next</a>
+        <span><a class="page_number" href="?page={{ contacts.next_page_number }}">下一页</a></span>
     {% endif %}
+    <div class=page_other>第{{ contacts.number }}页（共{{ contacts.paginator.num_pages }}页）</div>
+</div>

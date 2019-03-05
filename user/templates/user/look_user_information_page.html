@@ -27,8 +27,8 @@
                     </tr>
             </table>
         {% endfor %}
-        <a href="{% url 'user:add_receive_information_page' %}"> 添加收货信息 </a>
+        <a href="{% url 'user:add_receive_information_page' %}?redirect_to={{ request.path }}"> 添加收货信息 </a>
     {% else %}
-        还没有收货信息，<a href="{% url 'user:add_receive_information_page' %}"> 添加收货信息 </a>
+        还没有收货信息，<a href="{% url 'user:add_receive_information_page' %}?redirect_to={{ request.path }}"> 添加收货信息 </a>
     {% endif %}
 {% endblock %}

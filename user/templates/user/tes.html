@@ -1,0 +1,75 @@
+<%@ page language="java" contentType="text/html; charset=gb2312"
+    pageEncoding="gb2312"%>
+<%@ page import="java.io.*" %>
+<%@ page import="com.Bmazon.UserSystem.LookBook" %>
+<%@ page import="com.Bmazon.BookItem" %>
+<%@ page import="com.Bmazon.UserItem" %>
+<%
+	UserItem useritem = (UserItem)session.getAttribute("useritem");
+	if(useritem==null){
+		useritem = new UserItem();
+		useritem.setUserid(0);
+		session.setAttribute("useritem", useritem);
+	}
+	LookBook lookbook = (LookBook)request.getAttribute("lookbook");
+	request.setAttribute("lookbook",lookbook);
+  	BookItem bookitem = lookbook.getBookitem();
+%>
+<!DOCTYPE html >
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=windows-1252" />
+	<title>Êé¼®ÏêÏ¸ÐÅÏ¢</title>
+	<link rel="stylesheet" type="text/css" href="assets/css/user_index.css" />
+	<link rel="stylesheet" type="text/css" href="assets/css/book_details.css" />
+	<link rel="stylesheet" type="text/css" href="assets/css/style.css" />
+	<link rel="stylesheet" type="text/css" href="assets/css/gnt.css" />
+</head>
+
+<body>
+	<div id="wrap">
+	<%@ include file="templates/navigation_bars.jsp" %><!-- µ¼º½Ìõ  -->
+    	<div class="center_content"><br>
+    		<%@ include file="templates/search_bars.jsp" %><!-- ËÑË÷Ìõ  -->
+
+			<div class="left_content">
+				<div class="title"><span class="title_icon"></span>Êé¼®ÏêÇé</div>
+	      		<div class="feat_prod_box">
+	      			<div class="prod_img"><img src="<%=bookitem.getPhotouri()%>" alt="" title="" border="0" width=200ps height=270ps /></div>
+	      			<div class="prod_title"><font size="4"><a color= white href="usersystem?operator=lookbook&bookid=<%=bookitem.getBookid()%>"><%=bookitem.getName() %></a></font></div>
+						<br>Ô­¼Û£º<del><span class="book_inf"><%=bookitem.getPrice() %>£¤<br></span></del>
+						<div class="null"></div>
+						ÕÛ¿Û£º<span class="book_inf"><%=bookitem.getDiscount() %>ÕÛ<br> </span>
+				        <div class="null"></div>
+						¼Û¸ñ£º<span class="book_price"><%=String.format("%.1f",bookitem.getPrice()*bookitem.getDiscount()/10)%>£¤<br> </span>
+				        <div class="null"></div>
+						×÷Õß£º<span class="book_inf"><%=bookitem.getAuthor() %><br> </span>
+				        <div class="null"></div>
+						³ö°æÉÌ£º<span class="book_inf"><%=bookitem.getPublisher() %><br> </span>
+				        <div class="null"></div>
+				       	 ·ÖÀà£º<span class="book_inf"><%=bookitem.getCategory()%><br> </span>
+				        <div class="null"></div>
+				              ÏúÁ¿£º<span class="book_inf"><%=bookitem.getSalenumber() %><br> </span>
+				        <div class="null"></div>
+						¿â´æ£º<span class="book_inf"><%=bookitem.getStock() %><br> </span>
+				        <div class="null"></div>
+						<br>
+						<form action="usersystem" method=post>
+							<input type=submit  class="buy" value="Á¢¼´¹ºÂò">&nbsp;
+							<input type=hidden name=operator value=buy>
+						</form>
+				</div>
+				<span class="book_inf"> ÕªÒª£º<br><%=bookitem.getSummary() %><br> </span>
+				<div class="null"></div>
+				<span class="book_inf">Ä¿Â¼£º<br><%=bookitem.getCatalogue() %><br> </span>
+				<div class="null"></div>
+	    		<div class="clear"></div>
+				<div class="clear"></div>
+			</div>
+
+	    	<div class="clear"></div>
+		</div><!--end of center content-->
+    	<div class="footer"></div>
+	</div>
+</body>
+</html>

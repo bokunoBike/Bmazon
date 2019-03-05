@@ -11,6 +11,11 @@ def get_orders_by_user(user):
     return orders
 
 
+def get_orders_all():
+    orders = Order.objects.all().order_by('-order_id')
+    return orders
+
+
 def get_orders_by_order_id(order_id):
     orders = Order.objects.filter(order_id=order_id)
     if orders.exists():
@@ -72,6 +77,7 @@ def create_order(user, success_items, create_dict):
                     user.profile.shopping_cart.remove(item.book)
                     total_fees += item.price * item.sale_count
                 total_fees -= order.coupon
+                order.total_fees = total_fees
                 order.save()
                 return True
         except Exception as e:

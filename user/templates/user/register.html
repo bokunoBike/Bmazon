@@ -1,9 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>注册</title>
-</head>
+{% extends 'base.html' %}
+
+{% block titile %} 用户登录 {% endblock %}
+    {% block add_head_link %}
+        <link rel="stylesheet" type="text/css" href="/static/css/login.css" />
+    {% endblock %}
+
+{% block content %}
+    <div class="center_content">
+        <div class="signin">
+            <div class="box">
+                <div class="title-login">请注册</div>
+                    <!--注册表单-->
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ register_form.username }}{% if request.method == "POST" %}{{ register_form.username.errors.0 }}{% endif %}
+
+                        <div class="" style="margin: 20px 0;">
+                            {{ register_form.password1 }}{% if request.method == "POST" %}{{ register_form.password1.errors.0 }}{% endif %}
+                        </div>
+
+                        <div class="" style="margin: 20px 0;">
+                            {{ register_form.password2 }}{% if request.method == "POST" %}{{ register_form.password2.errors.0 }}{% endif %}
+                        </div>
+
+                        <div class="" style="margin: 20px 0;">
+                            {{ register_form.email }}{% if request.method == "POST" %}{{ register_form.email.errors.0 }}{% endif %}
+                        </div>
+
+                        <div class="" style="margin: 20px 0;">
+                            {{ register_form.phone }}{% if request.method == "POST" %}{{ register_form.phone.errors.0 }}{% endif %}
+                        </div>
+
+                        <input type="submit" id="sub" class="btn btn-primary btn-submit"   value="注&nbsp;&nbsp;册">
+                    </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
 
 <body>
     <h1>这是注册页面</h1>

@@ -1,36 +1,41 @@
 {% extends 'base.html' %}
 
 {% block titile %} 修改信息 {% endblock %}
+    {% block add_head_link %}
+	    <link rel="stylesheet" type="text/css" href="/static/css/user_page.css" />
+    {% endblock %}
 
 {% block the_titile %} 修改信息 {% endblock %}
 
 {% block content %}
+    <div class="user_change">
         <form action="" method="post">
-        {% csrf_token %}
-        {% for field in modify_user_info_form %}
-            <p>{{ field.label_tag }} {{ field }}{% if request.method == "POST" %}{{ field.errors.0 }}{% endif %}</p>
-        {% endfor %}
-        <input type="submit" value="修改"> <input type="reset" value="重置">
-    </form>
+            {% csrf_token %}
+            {% for field in modify_user_info_form %}
+                <p>{{ field.label_tag }} {{ field }}{% if request.method == "POST" %}{{ field.errors.0 }}{% endif %}</p>
+            {% endfor %}
+            <input type="submit" value="修改"> <input type="reset" value="重置">
+        </form>
 
-    {% if receive_informations.exists %}
-        {% for receive_information in receive_informations %}
-            <table>
-                <th>收货人</th><th>联系方式</th><th>地址</th><th></th>
-                    <tr>
-                        <td>{{ receive_information.recipient }}</td>
-                        <td>{{ receive_information.phone }}</td>
-                        <td>{{ receive_information.address_province }} {{ receive_information.address_city }} {{ receive_information.address_town }}
-                            <br>{{ receive_information.address_detailed }}</td>
-                        <td><form action="{% url 'user:delete_receive_info' %}" method="post">
-                            <input type="hidden" name="receive_information_id" value="{{ receive_information_id }}">
-                            <input type="submit" value="删除">
-                        </form> </td>
-                    </tr>
-            </table>
-        {% endfor %}
-        <a href="{% url 'user:add_receive_information_page' %}"> 添加收货信息 </a>
-    {% else %}
-        还没有收货信息，<a href="{% url 'user:add_receive_information_page' %}"> 添加收货信息 </a>
-    {% endif %}
+        {% if receive_informations.exists %}
+            {% for receive_information in receive_informations %}
+                <table>
+                    <th>收货人</th><th>联系方式</th><th>地址</th><th></th>
+                        <tr>
+                            <td>{{ receive_information.recipient }}</td>
+                            <td>{{ receive_information.phone }}</td>
+                            <td>{{ receive_information.address_province }} {{ receive_information.address_city }} {{ receive_information.address_town }}
+                                <br>{{ receive_information.address_detailed }}</td>
+                            <td><form action="{% url 'user:delete_receive_info' %}" method="post">
+                                <input type="hidden" name="receive_information_id" value="{{ receive_information.receive_information_id }}">
+                                <input type="submit" value="删除">
+                            </form> </td>
+                        </tr>
+                </table>
+            {% endfor %}
+            <a href="{% url 'user:add_receive_information_page' %}?redirect_to={{ request.path }}"> 添加收货信息 </a>
+        {% else %}
+            还没有收货信息，<a href="{% url 'user:add_receive_information_page' %}?redirect_to={{ request.path }}"> 添加收货信息 </a>
+        {% endif %}
+    </div>
 {% endblock %}

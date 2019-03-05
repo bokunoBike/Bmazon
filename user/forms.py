@@ -20,6 +20,8 @@ class LoginForm(forms.Form):
             "max_length": "用户名的长度应该在6到14个字符之间",
         }
     )
+    username.widget.attrs.update({'class': 'form-control form-input', 'placeholder': "用户名"})
+
     password = forms.CharField(
         label='密码',
         widget=forms.PasswordInput,
@@ -31,6 +33,7 @@ class LoginForm(forms.Form):
             "max_length": "密码的长度应该在6到12个字符之间",
         }
     )
+    password.widget.attrs.update({'class': 'form-control form-input', 'placeholder': "密码"})
 
     def clean_username(self):
         username = self.cleaned_data.get("username")
@@ -57,6 +60,7 @@ class RegisterForm(forms.Form):
             "max_length": "用户名的长度应该在6到14个字符之间",
         }
     )
+    username.widget.attrs.update({'class': 'form-control form-input', 'placeholder': "新用户名"})
     password1 = forms.CharField(
         label='密码',
         widget=forms.PasswordInput,
@@ -68,17 +72,23 @@ class RegisterForm(forms.Form):
             "max_length": "密码的长度应该在6到12个字符之间",
         }
     )
+    password1.widget.attrs.update({'class': 'form-control form-input', 'placeholder': "密码"})
     password2 = forms.CharField(
         label='确认密码',
         widget=forms.PasswordInput,
     )
+    password2.widget.attrs.update({'class': 'form-control form-input', 'placeholder': "确认密码"})
+
     email = forms.EmailField(
         label='邮箱'
     )
+    email.widget.attrs.update({'class': 'form-control form-input', 'placeholder': "邮箱"})
+
     phone = forms.CharField(
         label='手机号',
         max_length=16,
     )
+    phone.widget.attrs.update({'class': 'form-control form-input', 'placeholder': "手机号"})
 
     def clean_username(self):
         username = self.cleaned_data.get("username")

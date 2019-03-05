@@ -72,7 +72,7 @@ class SpiderMan(object):
         if root_page is not None:
             # 添加入口url
             self.manager.add_new_page(root_page)
-        while self.manager.has_new_page() and self.manager.old_page_size() < 45:
+        while self.manager.has_new_page() and self.manager.old_page_size() < 70:    # 表示总共要抓取的页面数
             new_page = self.manager.get_new_page()
             html = self.downloader.download(new_page)
             new_pages, new_urls = self.parser.parser_page(new_page, html)

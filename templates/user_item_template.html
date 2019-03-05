@@ -1,21 +1,52 @@
-    <br>
-    {% if user.is_anonymous %}
-        欢迎您，游客！<br>
-        <a href={% url 'user:login'%}?redirect_to={{ request.path }}>登录</a>
-        <a href={% url 'user:register' %}>注册</a>
-    {% elif user.is_staff %}
-        欢迎您，管理员{{user.username}}!<br>
-        <a href={% url 'manager:logout' %}>注销</a>
-        <a href={% url 'manager:home' %}>主页</a>
-        <a href={% url 'manager:handle_orders' %}>处理订单</a>
-        <a href={% url 'manager:add_book_page' %}>添加书籍</a>
-    {% else  %}
-        欢迎您，用户{{user.username}}!<br>
-        <a href={% url 'user:logout' %}>注销</a>
-        <a href={% url 'user:home' %}>主页</a>
-        <a href={% url 'user:look_orders_page' %}>我的订单</a>
-        <a href={% url 'user:look_shopping_cart_page' %}>我的购物车</a>
-        <a href={% url 'user:look_trove_page' %}>我的收藏</a>
-        <a href={% url 'user:look_user_information_page' %}>我的信息</a>
-    {% endif %}
-    <br>
+<link rel="stylesheet" href="/static/css/dropdown.css">
+<div id="menu">
+    <div class="right_content">
+        <ul>
+            {% if user.is_anonymous %}
+                    <li>欢迎您，游客！</li>
+                    <li><a href={% url 'user:login'%}?redirect_to={{ request.path }}>登录</a></li>
+                    <li><a href={% url 'user:register' %}>注册</a></li>
+            {% elif user.is_staff %}
+                <li>欢迎您，管理员</li>
+                <div class="menubar">
+                    <div class="menuitem">
+                        <div onclick="display()" style="color:#F00">{{user.username}}</div>
+                        <div class="submenu" id="submenu">
+                            <div><a href={% url 'manager:logout' %}>注销</a></div>
+                            <div><a href={% url 'manager:home' %}>主页</a></div>
+                            <div><a href={% url 'manager:look_orders_page' %}>处理订单</a></div>
+                            <div><a href={% url 'manager:add_book_page' %}>添加书籍</a></div>
+                        </div>
+                    </div>
+                    <div class="menuend"></div>
+                </div>
+            {% else  %}
+                <li>欢迎您，用户</li>
+                    <div class="menubar">
+                        <div class="menuitem">
+                            <div onclick="display()" style="color:#F00">{{user.username}}</div>
+                            <div class="submenu"  id="submenu">
+                                <div><a href={% url 'user:logout' %}>注销</a></div>
+                                <div><a href={% url 'user:home' %}>主页</a></div>
+                                <div><a href={% url 'user:look_orders_page' %}>我的订单</a></div>
+                                <div><a href={% url 'user:look_shopping_cart_page' %}>我的购物车</a></div>
+                                <div><a href={% url 'user:look_trove_page' %}>我的收藏</a></div>
+                                <div><a href={% url 'user:look_user_information_page' %}>我的信息</a></div>
+                            </div>
+                        </div>
+                        <div class="menuend"></div>
+                    </div>
+            {% endif %}
+        </ul>
+    </div>
+    	<ul>
+     		<li class="selected"><a href="{% if user.is_staff %}{% url 'manager:home' %}{% else %}{% url 'user:home' %}{% endif %}">首页</a></li>
+       		<li><a href="{% if user.is_staff %}{% url 'manager:home' %}{% else %}{% url 'user:home' %}{% endif %}?search_info=文学">文学</a></li>
+       		<li><a href="{% if user.is_staff %}{% url 'manager:home' %}{% else %}{% url 'user:home' %}{% endif %}?search_info=历史">历史</a></li>
+       		<li><a href="{% if user.is_staff %}{% url 'manager:home' %}{% else %}{% url 'user:home' %}{% endif %}?search_info=经济管理">经济管理</a></li>
+       		<li><a href="{% if user.is_staff %}{% url 'manager:home' %}{% else %}{% url 'user:home' %}{% endif %}?search_info=计算机与互联网">计算机与互联网</a></li>
+       		<li><a href="{% if user.is_staff %}{% url 'manager:home' %}{% else %}{% url 'user:home' %}{% endif %}?search_info=社会科学">社会科学</a></li>
+       		<li><a href="{% if user.is_staff %}{% url 'manager:home' %}{% else %}{% url 'user:home' %}{% endif %}?search_info=Kindle电子书">Kindle电子书</a></li>
+       	</ul>
+</div>
+<script src="/static/js/dropdown.js"></script>
